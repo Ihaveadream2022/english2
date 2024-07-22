@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>English Sysnonym</title>
+        <link type="text/css" rel="stylesheet" href="css/style.css" />
+    </head>
+    <body>
+        <div id="synonym">
+            <h5 id="meaning"></h5>
+            <div id="items">
+                <div class="item small">
+                    <ul id="en"></ul>
+                </div>
+                <div class="item large">
+                    <ul id="cn"></ul>
+                </div>
+            </div>
+            <div id="audioList"></div>
+            <div id="recognize-result">result</div>
+            <div id="loading">loading...</div>
+            <canvas id="canvas"></canvas>
+        </div>
+        <div id="panel">
+            <div id="write-panel">
+                <div class="item" id="canvasRecognize">&#128269;</div>
+                <div class="item" id="canvasErase">&#129529;</div>
+                <div class="item" id="canvasShow">&#9997;</div>
+            </div>
+            <div id="nav-panel">
+                <div id="nav-panel-inner" class="item">
+                    <span class="item">
+                        <a id="homeBtn" class="item" href="/">&#8962;</a>
+                    </span>
+                    <span class="item" id="clearStyle">&#129529;</span>
+                </div>
+            </div>
+            <div id="play-panel">
+                <div id="play-panel-inner" class="item">
+                    <span class="item" id="audioPlayListBtn">&#9654;</span>
+                    <span class="item" id="audioPlayInteractiveBtn">&#9654;</span>
+                </div>
+            </div>
+            <div id="page-panel">
+                <div id="prevBtn" class="page-item">&#10096;</div>
+                <div class="page-item">
+                    <input id="pageCurrentElement" value="1" />
+                    <span>-</span>
+                    <span id="pageEndElement">100</span>
+                </div>
+                <div id="nextBtn" class="page-item btn">&#10097;</div>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="js/handwriting.canvas.js?a=20240509" type="text/javascript"></script>
+        <script src="js/synonym.js"></script>
+    </body>
+</html>

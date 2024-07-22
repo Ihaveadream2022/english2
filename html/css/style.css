@@ -1,0 +1,399 @@
+body,
+html,
+body,
+html,
+h1,
+h2,
+h3,
+h4,
+h5,
+ul,
+p,
+li {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+html,
+body {
+    height: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+a {
+    text-decoration: none;
+}
+:root {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Safari, and Opera */
+}
+#index-box {
+    box-sizing: border-box;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0;
+    position: relative;
+}
+#index-box .item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-bottom: 1px solid #999;
+    width: 100%;
+    height: 100%;
+    color: #fff;
+    font-weight: 900;
+    font-size: 30px;
+}
+
+#practice {
+    box-sizing: border-box;
+    height: 92%;
+    overflow: hidden;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 0;
+    position: relative;
+}
+#practice .item {
+    flex: 1;
+    height: 100%;
+}
+#practice .item.small {
+    flex: 0.5;
+}
+#practice .item.large {
+    flex: 1.5;
+}
+#practice #en,
+#practice #cn {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0;
+}
+#practice .item li {
+    flex: 1;
+    display: flex;
+    list-style-type: none;
+    align-items: center;
+    border-bottom: 1px solid #999;
+    justify-content: space-around;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 4px;
+    position: relative;
+}
+#practice .item li .example-num {
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 12px;
+    color: rgb(204, 0, 0);
+    font-weight: 900;
+}
+#practice .item li.active {
+    background: rgb(215, 255, 184);
+}
+#practice #example {
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+    display: none;
+    position: absolute;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    background: #eee;
+}
+#practice #audioList,
+#synonym #audioList {
+    display: none;
+}
+#practice #en {
+    border-right: 1px solid #999;
+}
+#practice #cn {
+    color: #000;
+    background-color: #fff;
+}
+#practice #recognize-result,
+#synonym #recognize-result {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 12px;
+    background: #fff;
+}
+#canvas {
+    display: none;
+    cursor: crosshair;
+    position: absolute;
+    bottom: 0px;
+    background: rgba(42, 135, 14, 0.2);
+}
+#recognize-result {
+    display: none;
+}
+#practice #example .name {
+    text-align: center;
+    padding: 6px 0;
+    border-bottom: 1px solid #999;
+    font-size: 14px;
+}
+#practice #example .option-li {
+    text-align: center;
+    display: flex;
+    justify-content: space-around;
+    line-height: 20px;
+}
+#practice #example .option-li.type {
+    background-color: #ccc;
+    font-weight: 900;
+    font-size: 10px;
+    padding: 2px;
+    border-bottom: 1px solid #999;
+}
+#practice #example .option-li .option-span {
+    width: 100%;
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 0;
+    box-sizing: border-box;
+    border-right: 1px solid #999;
+    border-bottom: 1px solid #999;
+}
+#practice #example .option-li .option-span.active,
+#practice #example .sentence-item.active {
+    background: rgb(215, 255, 184);
+}
+#practice #example .sentence-item {
+    font-size: 12px;
+    line-height: 20px;
+    padding: 6px;
+    border: 1px solid #999;
+    margin: 10px 6px;
+    border-radius: 4px;
+}
+#practice #example .sentence-item .missing {
+    color: #409eff;
+    font-weight: 900;
+}
+#loading {
+    position: absolute;
+    font-size: 10px;
+    top: 0;
+    left: 0;
+    /* display: none; */
+}
+
+/** Synonym **/
+#synonym {
+    box-sizing: border-box;
+    height: 92%;
+    overflow: hidden;
+    padding: 0;
+    position: relative;
+}
+#synonym #meaning {
+    text-align: center;
+    font-weight: 900;
+    border-bottom: 1px solid #999;
+    height: 32px;
+    line-height: 32px;
+}
+#synonym #items {
+    height: calc(100% - 32px);
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+#synonym #items .item {
+    flex: 1;
+    height: 100%;
+}
+#synonym #items .item.small {
+    flex: 0.5;
+}
+#synonym #items .item.large {
+    flex: 1.5;
+}
+#synonym #items ul {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0;
+}
+#synonym #items .item li {
+    flex: 1;
+    display: flex;
+    list-style-type: none;
+    align-items: center;
+    border-bottom: 1px solid #999;
+    justify-content: space-around;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 4px;
+}
+#synonym #items .item li.active {
+    background: rgb(215, 255, 184);
+}
+
+#synonym #items #en {
+    border-right: 1px solid #999;
+}
+#synonym #items #cn {
+    color: #000;
+    background-color: #fff;
+}
+
+/** Article **/
+#article {
+    box-sizing: border-box;
+    height: 92%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 0;
+    position: relative;
+}
+#article .title {
+    text-align: center;
+    font-size: 12px;
+    border-bottom: 1px solid #999;
+    padding: 5px 0;
+    font-weight: 900;
+}
+#article .content {
+    padding: 4px;
+    font-size: 12px;
+    white-space: normal;
+    line-height: 22px;
+}
+#article .content .main-point {
+    color: #409eff;
+    font-weight: 900;
+}
+#article .content p.active {
+    color: #eee;
+    background: rgb(64, 158, 255);
+    padding: 6px;
+    font-size: 14px;
+    line-height: 24px;
+}
+#article p {
+    margin: 6px 0;
+}
+#article img {
+    max-width: 100%;
+}
+
+/** Panel **/
+#panel {
+    height: 8%;
+    overflow: hidden;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 0;
+}
+
+#page-panel .page-item {
+    flex: 1;
+    height: 100%;
+    text-align: center;
+    display: flex;
+    list-style-type: none;
+    align-items: center;
+    justify-content: space-around;
+    background-color: rgb(31, 106, 124);
+    color: #fff;
+    font-weight: 900;
+}
+#panel #pageCurrentElement {
+    width: 30px;
+    height: 8px;
+    text-align: center;
+}
+#panel #write-panel,
+#panel #page-panel,
+#panel #example-panel,
+#panel #nav-panel,
+#panel #play-panel {
+    height: 100%;
+    width: 50%;
+    overflow: hidden;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 0;
+    box-sizing: border-box;
+    flex: 1;
+}
+#panel #write-panel .item,
+#panel #example-panel .item,
+#panel #nav-panel .item,
+#panel #play-panel .item {
+    flex: 1;
+    height: 100%;
+    text-align: center;
+    display: flex;
+    list-style-type: none;
+    align-items: center;
+    justify-content: space-around;
+    color: #fff;
+    font-weight: 900;
+    border-right: 1px solid #999;
+}
+#panel #play-panel,
+#panel #example-panel,
+#panel #nav-panel {
+    flex: 0.3;
+}
+#panel #write-panel .item {
+    background: #007bff;
+}
+#panel #example-panel .item {
+    background: rgb(204, 0, 0);
+}
+#panel #nav-panel .item {
+    background: rgb(60, 55, 131);
+}
+#panel #play-panel .item {
+    background: rgb(42, 135, 14);
+}
+#panel #play-panel #play-panel-inner,
+#panel #nav-panel #nav-panel-inner {
+    height: 100%;
+    width: 50%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    box-sizing: border-box;
+    flex: 1;
+    font-size: 12px;
+}
+#panel #play-panel #play-panel-inner .item,
+#panel #nav-panel #nav-panel-inner .item {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    font-weight: 300;
+    border: 0;
+    border-bottom: 1px solid #999;
+}

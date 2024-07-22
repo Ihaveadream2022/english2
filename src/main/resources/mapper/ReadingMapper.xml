@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.english.mapper.ReadingMapper">
+	<resultMap type="Reading" id="ReadingMapper">
+		<id property="id" column="id" />
+		<result property="sort" column="sort" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+	</resultMap>
+	<!-- Select -->
+	<sql id="selectWhere">
+		<trim prefix="WHERE 1=1 AND (" suffix=")" prefixOverrides="AND">
+			<if test="keyword != null and keyword != ''">AND (
+				`title` LIKE concat('%', #{keyword}, '%') OR
+				`content` LIKE concat('%', #{keyword}, '%')
+				)
+			</if>
+		</trim>
+	</sql>
+	<select id="count" parameterType="QueryCondition" >
+		SELECT count(id) AS `total` FROM `reading` <include refid="selectWhere" />
+	</select>
+	<select id="selectLimited" parameterType="QueryCondition" resultMap="ReadingMapper">
+		SELECT * FROM `reading` <include refid="selectWhere" /> ORDER BY `id` DESC
+		<if test="pageSize != null and pageSize > 0">
+			<if test="offset != null and offset >= 0">
+				LIMIT #{offset},#{pageSize}
+			</if>
+		</if>
+	</select>
+	<select id="findByTitle" parameterType="String" resultMap="ReadingMapper">
+		SELECT * FROM `reading` WHERE `title` = #{title} LIMIT 1
+	</select>
+	<!-- Select -->
+	<!-- Insert -->
+	<insert id="insert" parameterType="Reading" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `reading`
+		<trim prefix=" (" suffix=") " prefixOverrides=",">
+			`title`
+			<if test="sort != null and sort > 0">,`sort`</if>
+			<if test="content != null">,`content`</if>
+		</trim> VALUES
+		<trim prefix=" (" suffix=") " prefixOverrides=",">
+			#{title}
+			<if test="sort != null and sort > 0">,#{sort}</if>
+			<if test="content != null">,#{content}</if>
+		</trim>
+	</insert>
+	<!-- Insert -->
+	<!-- Update -->
+	<update id="update" parameterType="Reading">
+		UPDATE `reading`
+		<set>
+			<if test="title != null and title != ''">,`title` = #{title}</if>
+			<if test="sort != null and sort >=0">,`sort` = #{sort}</if>
+			<if test="content != null">,`content` = #{content}</if>
+		</set>
+		WHERE `id` = #{id}
+	</update>
+	<!-- Update -->
+	<!-- Delete -->
+	<delete id="delete" parameterType="DeleteRequestBody">
+		DELETE FROM `reading` <if test="id != null and id > 0">WHERE `id` = #{id}</if>
+	</delete>
+	<delete id="batchDelete" parameterType="DeleteRequestBody">
+		DELETE FROM `reading`
+		<if test="ids != null and ids.length > 0">
+			WHERE `id` IN
+			<foreach item="id" collection="ids" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
+	</delete>
+	<!-- Delete -->
+</mapper>
