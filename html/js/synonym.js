@@ -1,7 +1,7 @@
 $(document).ready(function () {
     var Application = function () {
         var that = this;
-        that.domainRoot = window.location.host.includes("github") ? "/english/html/" : "/";
+        that.domainRoot = window.location.host.includes("github") ? "/english2/html/" : "/";
         that.JSONPrefix = window.location.pathname.split("/").pop().replace(".html", "");
         that.navHomeBtn = document.getElementById("homeBtn");
         that.ulElementCn = document.getElementById("cn");
