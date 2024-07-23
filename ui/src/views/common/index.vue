@@ -96,7 +96,7 @@
             font-size: 14px;
             color: #333;
             padding-bottom: 10px;
-            border-bottom: 2px solid rgb(88, 204, 2);
+            border-bottom: 2px solid #409eff;
         }
     }
     .searchBox {

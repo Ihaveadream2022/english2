@@ -136,7 +136,7 @@
 </script>
 <style lang="scss" scoped>
     .container {
-        background-color: rgb(88, 204, 2);
+        background-color: #409eff;
         padding: 0 !important;
         height: 36px !important;
         display: flex;
@@ -205,7 +205,7 @@
                     width: 450px !important;
                     .el-dialog__header {
                         padding: 8px 20px;
-                        background-color: rgb(88, 204, 2);
+                        background-color: #409eff;
                         border-radius: 4px 4px 0 0;
                         .el-dialog__title {
                             color: #fff;

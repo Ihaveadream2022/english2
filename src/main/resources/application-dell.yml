@@ -2,7 +2,7 @@
 
 app:
     name: english
-    gitRepositoryPath: D:\Github\english
+    gitRepositoryPath: D:\Github\english2
 
 server:
     port: 8080 # WEB服务端口

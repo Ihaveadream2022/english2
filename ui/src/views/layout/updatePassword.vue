@@ -132,7 +132,7 @@
                 width: 420px !important;
                 .el-dialog__header {
                     padding: 8px 20px;
-                    background-color: rgb(88, 204, 2);
+                    background-color: #409eff;
                     border-radius: 4px 4px 0 0;
                     .el-dialog__title {
                         color: #fff;

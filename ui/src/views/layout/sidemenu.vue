@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <el-scrollbar wrap-class="scrollbar-wrapper">
-            <el-menu :default-active="$route.path" :unique-opened="true" background-color="#001529" text-color="#fff" :collapse-transition="false" active-text-color="rgb(88, 204, 2)" :router="true">
+            <el-menu :default-active="$route.path" :unique-opened="true" background-color="#001529" text-color="#fff" :collapse-transition="false" active-text-color="#409eff" :router="true">
                 <template v-for="item in menuList">
                     <template v-if="!item.childMenu">
                         <el-menu-item :index="item.accessUrl" :route="item.accessUrl" :key="item.id">

@@ -215,7 +215,7 @@
                         display: inline-block;
                         width: 60px;
                         height: 3px;
-                        background-color: rgb(88, 204, 2);
+                        background-color: #409eff;
                         position: absolute;
                         bottom: -3px;
                         left: 50%;
@@ -234,7 +234,7 @@
                             .fa {
                                 margin: 0 10px;
                                 font-size: 18px;
-                                color: rgb(88, 204, 2);
+                                color: #409eff;
                                 width: 16px;
                                 vertical-align: middle;
                             }
@@ -267,8 +267,8 @@
                             border: 0;
                             .el-button--primary {
                                 width: 100%;
-                                background-color: rgb(88, 204, 2);
-                                border-color: rgb(88, 204, 2);
+                                background-color: #409eff;
+                                border-color: #409eff;
                                 &:hover {
                                     background: #0b59bd;
                                     border-color: #0b59bd;
@@ -276,7 +276,7 @@
                                 }
                             }
                             .find-pass {
-                                color: rgb(88, 204, 2);
+                                color: #409eff;
                             }
                         }
                     }

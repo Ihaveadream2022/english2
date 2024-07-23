@@ -10,6 +10,8 @@ public class ItemTts {
 
     private String audioCn;
 
+    private byte audioSource;
+
     public Long getId() {
         return id;
     }
@@ -40,5 +42,13 @@ public class ItemTts {
 
     public void setAudioCn(String audioCn) {
         this.audioCn = audioCn;
+    }
+
+    public byte getAudioSource() {
+        return audioSource;
+    }
+
+    public void setAudioSource(byte audioSource) {
+        this.audioSource = audioSource;
     }
 }

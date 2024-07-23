@@ -135,7 +135,7 @@ public class ItemTtsServiceImpl implements ItemTtsService {
 
                         // Update item audio
                         if (byteBase64 != null && byteBase64.length() > 0) {
-                            if (x == 0) itemTts.setAudio(byteBase64);
+                            if (x == 0 && itemTts.getAudioSource() == 0) itemTts.setAudio(byteBase64);
                             if (x == 1) itemTts.setAudioCn(byteBase64);
                         }
                     }

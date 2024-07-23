@@ -28,6 +28,7 @@
 		<result property="name" column="it_name" />
 		<result property="audio" column="it_audio" />
 		<result property="audioCn" column="it_audio_cn" />
+		<result property="audioSource" column="it_audio_source" />
 	</resultMap>
 	<resultMap type="ItemExample" id="ItemExampleMapper">
 		<id property="id" column="ie_id" />
@@ -65,6 +66,7 @@
 		    `item_tts`.`name` AS `it_name`,
 			`item_tts`.`audio` AS `it_audio`,
 			`item_tts`.`audio_cn` AS `it_audio_cn`,
+			`item_tts`.`audio_source` AS `it_audio_source`,
 			`item_example`.`id` AS `ie_id`,
 			`item_example`.`name` AS `ie_name`,
 			`item_example`.`examples` AS `ie_examples`

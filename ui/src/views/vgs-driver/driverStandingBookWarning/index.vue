@@ -465,7 +465,7 @@
                 padding: 0 10px;
             }
             .el-button--primary {
-                background-color: rgb(88, 204, 2);
+                background-color: #409eff;
             }
             .el-button--primary:focus,
             .el-button--primary:hover {
@@ -483,7 +483,7 @@
                 padding: 12px 28px;
             }
             .el-button--text {
-                color: rgb(88, 204, 2);
+                color: #409eff;
             }
             .el-button--text:focus,
             .el-button--text:hover {
@@ -503,7 +503,7 @@
     .el-dialog__wrapper {
         ::v-deep .el-dialog__header {
             padding: 8px 20px !important;
-            background-color: rgb(88, 204, 2);
+            background-color: #409eff;
             .el-dialog__title {
                 color: #fff;
             }
@@ -523,7 +523,7 @@
             font-size: 16px;
             margin-bottom: 20px;
             .iconFont {
-                color: rgb(88, 204, 2);
+                color: #409eff;
                 margin-right: 4px;
                 font-size: 14px;
             }

@@ -188,7 +188,7 @@
                 <el-descriptions-item label="添加示例">
                     <div class="example-panel">
                         <el-input placeholder="" v-model="dataExampleDialog.exampleKey" clearable></el-input>
-                        <el-input placeholder="" v-model="dataExampleDialog.exampleContent" type="textarea" maxlength="1024" style="margin: 10px 0; border-radius: 4px; border: 1px solid rgb(88, 204, 2)"></el-input>
+                        <el-input placeholder="" v-model="dataExampleDialog.exampleContent" type="textarea" maxlength="1024" style="margin: 10px 0; border-radius: 4px; border: 1px solid #409eff"></el-input>
                         <el-button type="primary" @click="appendExamples">+</el-button>
                     </div>
                 </el-descriptions-item>
@@ -222,6 +222,7 @@
                         { label: "English", value: 1 },
                         { label: "Chinese", value: 2 },
                     ],
+                    timeoutHanlder: null,
                 },
                 copiedText: "",
                 table: {
@@ -685,7 +686,7 @@
                     const index = this.speech.currentIndex == 0 ? this.table.tableList.length : this.speech.currentIndex;
                     const intaval = this.speech.readingInterval + (Math.ceil(this.table.tableList[index - 1].name.length / 8) - 1) * 1000;
                     console.log(intaval + "后播放" + this.table.tableList[this.speech.currentIndex].name);
-                    setTimeout(() => {
+                    this.speech.timeoutHanlder = setTimeout(() => {
                         const audio = this.$refs.audioList;
                         audio.src = this.speech.type == 1 ? "data:audio/wav;base64," + this.table.tableList[this.speech.currentIndex].tts.audio : "data:audio/wav;base64," + this.table.tableList[this.speech.currentIndex].tts.audioCn;
                         audio.load();
@@ -709,10 +710,13 @@
                 }
             },
             speechStopHandle() {
+                clearTimeout(this.speech.timeoutHanlder);
+                this.$refs.audioList.pause();
+                this.$refs.audioList.currentTime = 0;
+                this.$refs.audioList.removeEventListener("ended", this.speechPlayList, false);
                 this.speech.currentIndex = 0;
                 this.speech.isPlaying = false;
                 this.speech.text = "Play";
-                this.$refs.audioList.removeEventListener("ended", this.speechPlayList, false);
             },
             handleEnter() {
                 this.tableSearch();
@@ -778,7 +782,7 @@
             font-size: 14px;
             color: #333;
             padding-bottom: 10px;
-            border-bottom: 2px solid rgb(88, 204, 2);
+            border-bottom: 2px solid #409eff;
         }
     }
     .searchBox {
@@ -835,7 +839,7 @@
                 padding: 0 10px;
             }
             .el-button--primary {
-                background-color: rgb(88, 204, 2);
+                background-color: #409eff;
                 &.example-btn {
                     position: relative;
                     .example-num {
@@ -904,7 +908,7 @@
         }
         ::v-deep .el-dialog__header {
             padding: 8px 20px !important;
-            background-color: rgb(88, 204, 2);
+            background-color: #409eff;
             .el-dialog__title {
                 line-height: 20px;
                 font-size: 14px;
@@ -926,7 +930,7 @@
             font-size: 14px;
             margin-bottom: 20px;
             .iconFont {
-                color: rgb(88, 204, 2);
+                color: #409eff;
                 margin-right: 4px;
                 font-size: 14px;
             }
@@ -944,17 +948,17 @@
         }
         .el-divider__text {
             color: #fff;
-            background: rgb(88, 204, 2);
+            background: #409eff;
         }
         .el-divider {
-            background: rgb(88, 204, 2);
+            background: #409eff;
         }
         ::v-deep .el-collapse-item__wrap {
             padding: 30px 0;
             background: #eee;
         }
         ::v-deep .el-collapse-item__header {
-            background-color: rgb(88, 204, 2);
+            background-color: #409eff;
             padding-left: 10px;
             height: 32px;
             line-height: 32px;
@@ -998,7 +1002,7 @@
                         color: #fff;
                     }
                     .el-input {
-                        border: 1px solid rgb(88, 204, 2);
+                        border: 1px solid #409eff;
                     }
                 }
             }

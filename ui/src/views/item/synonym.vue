@@ -53,7 +53,7 @@
                     <div class="example-panel">
                         <el-input placeholder="" v-model="editDialog.dataEn"></el-input>
                         <el-button type="primary" @click="appendItems">+</el-button>
-                        <el-input placeholder="" v-model="editDialog.dataCn" type="textarea" maxlength="1024" style="margin-top: 10px; border-radius: 4px; border: 1px solid rgb(88, 204, 2)"></el-input>
+                        <el-input placeholder="" v-model="editDialog.dataCn" type="textarea" maxlength="1024" style="margin-top: 10px; border-radius: 4px; border: 1px solid #409eff"></el-input>
                     </div>
                 </el-descriptions-item>
                 <el-descriptions-item label="同义单列表">
@@ -369,7 +369,7 @@
             font-size: 14px;
             color: #333;
             padding-bottom: 10px;
-            border-bottom: 2px solid rgb(88, 204, 2);
+            border-bottom: 2px solid #409eff;
         }
     }
     .searchBox {
@@ -426,7 +426,7 @@
                 padding: 0 10px;
             }
             .el-button--primary {
-                background-color: rgb(88, 204, 2);
+                background-color: #409eff;
             }
             .el-button--primary:focus,
             .el-button--primary:hover {
@@ -486,7 +486,7 @@
         }
         ::v-deep .el-dialog__header {
             padding: 8px 20px !important;
-            background-color: rgb(88, 204, 2);
+            background-color: #409eff;
             .el-dialog__title {
                 line-height: 20px;
                 font-size: 14px;
@@ -508,7 +508,7 @@
             font-size: 14px;
             margin-bottom: 20px;
             .iconFont {
-                color: rgb(88, 204, 2);
+                color: #409eff;
                 margin-right: 4px;
                 font-size: 14px;
             }
@@ -526,17 +526,17 @@
         }
         .el-divider__text {
             color: #fff;
-            background: rgb(88, 204, 2);
+            background: #409eff;
         }
         .el-divider {
-            background: rgb(88, 204, 2);
+            background: #409eff;
         }
         ::v-deep .el-collapse-item__wrap {
             padding: 30px 0;
             background: #eee;
         }
         ::v-deep .el-collapse-item__header {
-            background-color: rgb(88, 204, 2);
+            background-color: #409eff;
             padding-left: 10px;
             height: 32px;
             line-height: 32px;
@@ -573,7 +573,7 @@
                         color: #fff;
                     }
                     .el-input {
-                        border: 1px solid rgb(88, 204, 2);
+                        border: 1px solid #409eff;
                     }
                 }
             }

@@ -6,6 +6,7 @@
 		<result property="name" column="name" />
 		<result property="audio" column="audio" />
 		<result property="audioCn" column="audio_cn" />
+		<result property="audioSource" column="audio_source" />
 	</resultMap>
 	<!-- Select -->
 	<sql id="selectWhere">
@@ -32,10 +33,10 @@
 	<insert id="insert" parameterType="ItemTts" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO `item_tts`
 		<trim prefix=" (" suffix=") " prefixOverrides=",">
-			`name`,`audio`,`audio_cn`
+			`name`,`audio`,`audio_cn`,`audio_source`
 		</trim>VALUES
 		<trim prefix=" (" suffix=") " prefixOverrides=",">
-			#{name},#{audio},#{audioCn}
+			#{name},#{audio},#{audioCn},#{audioSource}
 		</trim>
 	</insert>
 	<!-- Insert -->
