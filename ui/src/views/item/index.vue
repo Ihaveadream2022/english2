@@ -13,6 +13,11 @@
                     <el-form-item label="Keyword :" prop="keyword">
                         <el-input placeholder="keyword" v-model="table.searchForm.keyword" @keyup.enter.native="handleEnter"></el-input>
                     </el-form-item>
+                    <el-form-item label="Order Type:">
+                        <el-select placeholder="请选择" v-model="table.searchForm.orderType">
+                            <el-option v-for="item in table.orderTypeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                    </el-form-item>
                     <el-form-item label="Reading Type:">
                         <el-select placeholder="请选择" v-model="speech.type">
                             <el-option v-for="item in speech.typeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -24,9 +29,8 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item label="Jump To Today:">
-                        <el-select placeholder="请选择" v-model="table.searchForm.jumpToToday" @change="handleJumpToToday">
-                            <el-option v-for="item in table.jumpToTodayOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                        </el-select>
+                        <el-radio v-model="table.searchForm.jumpToToday" :label="0" border>NO</el-radio>
+                        <el-radio v-model="table.searchForm.jumpToToday" :label="1" border @input="handleJumpToToday">YES</el-radio>
                     </el-form-item>
                 </div>
                 <div class="searchBtnBox">
@@ -233,12 +237,13 @@
                     searchForm: {
                         pageNo: 1,
                         pageSize: 10,
+                        orderType: "DESC",
                         jumpToToday: 0,
                     },
                     statics: {},
-                    jumpToTodayOptions: [
-                        { label: "否", value: 0 },
-                        { label: "是", value: 1 },
+                    orderTypeOptions: [
+                        { label: "DESC", value: "DESC" },
+                        { label: "ASC", value: "ASC" },
                     ],
                 },
                 editDialog: {
@@ -643,6 +648,7 @@
                 this.table.searchForm = {
                     pageNo: 1,
                     pageSize: 10,
+                    orderType: "DESC",
                     jumpToToday: 0,
                 };
                 this.speechStopHandle();

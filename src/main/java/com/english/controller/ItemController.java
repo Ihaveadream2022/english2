@@ -37,6 +37,7 @@ public class ItemController {
             if (itemQueryCondition.getPageNo() < pageFrom || itemQueryCondition.getPageNo() > pageEnd) {
                 itemQueryCondition.setPageNo(pageFrom);
             }
+            itemQueryCondition.setOrderType("ASC");
         }
 
         Map<String, Object> data = itemService.pageList(itemQueryCondition);

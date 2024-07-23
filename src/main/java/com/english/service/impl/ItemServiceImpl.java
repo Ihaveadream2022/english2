@@ -182,7 +182,7 @@ public class ItemServiceImpl implements ItemService {
         ItemQueryCondition itemQueryCondition = new ItemQueryCondition();
         long dataTotal = count(itemQueryCondition);
 //        long dataTotal = 31000;
-        int dataCountEveryday = 500;
+        int dataCountEveryday = 300;
         int dataTotalDays = (int) Math.ceil((double) dataTotal/dataCountEveryday);
         int dataCycleMonth = (int) Math.ceil((double) dataTotalDays/31);
 
