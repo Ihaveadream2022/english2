@@ -43,6 +43,11 @@ public class ReadingServiceImpl implements ReadingService {
     }
 
     @Override
+    public Long count(QueryCondition queryCondition) {
+        return readingMapper.count(queryCondition);
+    }
+
+    @Override
     public Reading findByTitle(String title) {
         return readingMapper.findByTitle(title);
     }

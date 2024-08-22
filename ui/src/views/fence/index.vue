@@ -734,7 +734,7 @@
             font-size: 16px;
             color: #333;
             padding-bottom: 10px;
-            border-bottom: 2px solid #409eff;
+            border-bottom: 2px solid #214999;
         }
     }
     .searchBox {
@@ -746,8 +746,8 @@
             padding-left: 20px;
         }
         .el-button {
-            background-color: #409eff;
-            border-color: #409eff;
+            background-color: #214999;
+            border-color: #214999;
         }
     }
     .table {
@@ -822,7 +822,7 @@
                 display: flex;
             }
             .name {
-                color: #409eff;
+                color: #214999;
                 flex-shrink: 0;
             }
             .item1 {
@@ -832,7 +832,7 @@
     }
     ::v-deep .el-dialog__header {
         padding: 8px 20px !important;
-        background-color: #409eff !important;
+        background-color: #214999 !important;
         .el-dialog__title {
             color: #fff;
         }

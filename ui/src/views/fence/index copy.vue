@@ -791,7 +791,7 @@
             display: flex;
         }
         .name {
-            color: #409eff;
+            color: #214999;
             flex-shrink: 0;
         }
         .item1 {
@@ -800,7 +800,7 @@
     }
     /deep/.el-range-editor.is-active,
     .el-range-editor.is-active:hover {
-        border-color: #409eff;
+        border-color: #214999;
         width: 451px;
     }
     .inpBox .el-date-editor {

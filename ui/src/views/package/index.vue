@@ -183,7 +183,7 @@
                     font-size: 16px;
                     color: #333;
                     padding-bottom: 10px;
-                    border-bottom: 2px solid #409eff;
+                    border-bottom: 2px solid #214999;
                 }
             }
             .search-box {

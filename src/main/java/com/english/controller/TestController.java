@@ -1,19 +1,25 @@
 package com.english.controller;
 
+import com.english.entity.Essay;
 import com.english.entity.Item;
 import com.english.entity.ItemExample;
 import com.english.entity.ItemTts;
+import com.english.exception.ServiceRuntimeException;
 import com.english.manager.ThreadManager;
 import com.english.mapper.ItemMapper;
 import com.english.model.KeyValue;
+import com.english.model.Vocabulary;
 import com.english.model.request.ItemQueryCondition;
 import com.english.model.request.ItemTtsQueryCondition;
 import com.english.model.request.QueryCondition;
+import com.english.service.impl.EssayServiceImpl;
 import com.english.service.impl.ItemExampleServiceImpl;
 import com.english.service.impl.ItemServiceImpl;
 import com.english.service.impl.ItemTtsServiceImpl;
 import com.english.util.FileUtil;
 import com.english.util.encrypt.Digest;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,8 +43,11 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.lang.Runnable;
@@ -108,10 +117,48 @@ public class TestController {
     ItemTtsServiceImpl itemTtsService;
 
 
+    @Autowired
+    EssayServiceImpl essayService;
 
     @GetMapping("/test")
     public void getAudio(HttpServletResponse response) throws IOException {
 
+//        int everyday = 300; // 每天背多少
+//        int pageSize = 10; // 每页多少条
+//        Set<Integer> days = new HashSet<>(); // 每周的周几背
+//        days.add(1);
+//        days.add(2);
+//
+//        long total = 900; // 总数据条数
+
+//        LocalDateTime now = LocalDateTime.of(2021,12,31,0,0);
+//        LocalDateTime now = LocalDateTime.now();
+//        DayOfWeek dayOfWeek = now.getDayOfWeek();
+//        int dayOfWeekValue = dayOfWeek.getValue(); // 周内第几天
+//        int weekOfYear = now.get(WeekFields.of(DayOfWeek.MONDAY, 1).weekOfYear()); // 年内第几周
+//        int totalDaysNeed = (int) Math.ceil((double) total/everyday);
+//        int todayComputedBase = (weekOfYear - 1) * days.size();
+//        int todayComputed = 0;
+//        if (days.size() * 51 <= totalDaysNeed) {
+//            throw new ServiceRuntimeException("实际总天数应大于所需总天数，否则会有单词无法背覆盖。");
+//        }
+//        for (Integer day : days) {
+//            if (dayOfWeekValue == day) {
+//                todayComputed = todayComputedBase + day;
+//            }
+//        }
+//        int todayCircle = ((todayComputed - 1 ) % totalDaysNeed) + 1;
+//        int itemsCountFrom = todayComputed > 0? (todayCircle - 1) * everyday + 1: 0;
+//        int itemsCountEnd = todayComputed > 0? todayCircle * everyday: 0;
+//        int itemsPageFrom = todayComputed > 0? (todayCircle - 1) * (everyday/pageSize) + 1: 0;
+//        int itemsPageEnd =  todayComputed > 0? todayCircle * (everyday/pageSize): 0;
+
+
+//        LocalDate date = LocalDate.now();
+//        LocalDateTime date = LocalDateTime.of(2024,12,31,0,0,0);
+//        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+//        int weekOfYear = date.get(weekFields.weekOfYear());
+//        System.out.println("当前是第 " + weekOfYear + " 周");
 //
 //        Runnable task = new Runnable() {
 //            @Override
@@ -186,23 +233,41 @@ public class TestController {
 //        String[] todayTodo = calc(total,today);
 
 
-//        QueryCondition queryCondition = new ItemQueryCondition();
-//        queryCondition.setPageSize(1000);
-//        queryCondition.setPageNo(1);
-//        Map<String,Object> map = itemService.pageList(queryCondition);
-//
-//        List<Item> itemList = (List<Item>) map.get("list");
-//        itemList.forEach(v->{
-//
-//            ItemExample itemExample = itemExampleService.findByName(v.getName());
-//            if (itemExample == null) {
+        QueryCondition queryCondition = new ItemQueryCondition();
+        queryCondition.setPageSize(1000);
+        queryCondition.setPageNo(1);
+        Map<String,Object> map = itemService.pageList(queryCondition);
+        List<Item> itemList = (List<Item>) map.get("list");
+        itemList.forEach(v->{
+            ItemExample itemExample = itemExampleService.findByName(v.getName());
+            if (itemExample != null) {
+                String json = itemExample.getExamples();
+                if (json != null && !json.equals("")) {
+                    ObjectMapper om = new ObjectMapper();
+                    try {
+                        List<KeyValue> kvList = om.readValue(json, new TypeReference<List<KeyValue>>() {});
+                        kvList.forEach(v2->{
+                            Essay essay = new Essay();
+                            essay.setTitle("test");
+                            essay.setContent(v2.getValue());
+//                            System.out.println(v2.getKey() + ":" + v2.getValue());
+
+                            essayService.insert(essay);
+
+
+                        });
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
 //                ItemExample itemExample1 = new ItemExample();
 //                itemExample1.setName(v.getName());
 //                itemExample1.setExamples(null);
 //                itemExampleService.insert(itemExample1);
-//            }
-//
-//        });
+            }
+
+        });
 //        response.setContentType("audio/mp3");
 //
 //
@@ -224,15 +289,15 @@ public class TestController {
 //            itemTtsService.update(v);
 //        });
 
-        QueryCondition queryCondition = new ItemQueryCondition();
-        queryCondition.setPageNo(1);
-        queryCondition.setPageSize(1000);
-        itemService.pageList(queryCondition);
-        Map<String, Object> data = itemService.pageList(queryCondition);
-        List<Item> list = (List<Item>) data.get("list");
-        list.forEach(v->{
-            itemTtsService.createAudio(v);
-        });
+//        QueryCondition queryCondition = new ItemQueryCondition();
+//        queryCondition.setPageNo(1);
+//        queryCondition.setPageSize(1000);
+//        itemService.pageList(queryCondition);
+//        Map<String, Object> data = itemService.pageList(queryCondition);
+//        List<Item> list = (List<Item>) data.get("list");
+//        list.forEach(v->{
+//            itemTtsService.createAudio(v);
+//        });
 
 //        QueryCondition queryCondition = new ItemQueryCondition();
 //        queryCondition.setPageNo(1);

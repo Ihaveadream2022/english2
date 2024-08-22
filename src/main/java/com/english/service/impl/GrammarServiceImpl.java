@@ -44,6 +44,11 @@ public class GrammarServiceImpl implements GrammarService {
         return data;
     }
 
+    @Override
+    public Long count(QueryCondition queryCondition) {
+        return grammarMapper.count(queryCondition);
+    }
+
     public Grammar findByName(String name) {
         return grammarMapper.findByName(name);
     }

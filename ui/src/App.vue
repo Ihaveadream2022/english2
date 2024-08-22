@@ -1,26 +1,25 @@
 <template>
     <div id="app">
-        <router-view></router-view>
+        <router-view v-if="show"></router-view>
     </div>
 </template>
-
 <script>
     export default {
         name: "app",
         provide() {
             return {
-                appReload: this.appReload,
+                reload: this.reload,
             };
         },
         data() {
             return {
-                appShow: true,
+                show: true,
             };
         },
         methods: {
-            appReload() {
-                this.appShow = false;
-                this.$nextTick(() => (this.appShow = true));
+            reload() {
+                this.show = false;
+                this.$nextTick(() => (this.show = true));
             },
         },
     };

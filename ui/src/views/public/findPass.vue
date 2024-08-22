@@ -180,7 +180,7 @@
         left: 0;
         top: 0;
         .el-header {
-            background-color: #409eff;
+            background-color: #214999;
             line-height: 46px;
             .text {
                 float: right;
@@ -193,7 +193,7 @@
             font-size: 20px;
             text-align: center;
             padding: 40px 0 50px 0;
-            color: #409eff;
+            color: #214999;
         }
         .phoneBox {
             width: 20%;

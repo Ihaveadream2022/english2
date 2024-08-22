@@ -308,7 +308,7 @@
             font-size: 16px;
             color: #333;
             padding-bottom: 10px;
-            border-bottom: 2px solid #409eff;
+            border-bottom: 2px solid #214999;
         }
     }
     .searchBox {
@@ -368,12 +368,12 @@
                 padding: 0 10px;
             }
             .el-button--primary {
-                background-color: #409eff;
+                background-color: #214999;
             }
             .el-button--primary:focus,
             .el-button--primary:hover {
-                background: #0b59bd;
-                border-color: #0b59bd;
+                background: #214999;
+                border-color: #214999;
                 color: #fff;
             }
             .el-button {
@@ -386,11 +386,11 @@
                 padding: 12px 28px;
             }
             .el-button--text {
-                color: #409eff;
+                color: #214999;
             }
             .el-button--text:focus,
             .el-button--text:hover {
-                color: #0b59bd;
+                color: #214999;
             }
             .el-table__body tr.hover-row > td {
                 background-color: rgba(14, 110, 236, 0.3) !important;
@@ -406,7 +406,7 @@
     .el-dialog__wrapper {
         ::v-deep .el-dialog__header {
             padding: 8px 20px !important;
-            background-color: #409eff;
+            background-color: #214999;
             .el-dialog__title {
                 color: #fff;
             }
@@ -426,7 +426,7 @@
             font-size: 16px;
             margin-bottom: 20px;
             .iconFont {
-                color: #409eff;
+                color: #214999;
                 margin-right: 4px;
                 font-size: 14px;
             }

@@ -9,6 +9,8 @@ public interface ReadingService {
 
     public HashMap<String, Object> pageList(QueryCondition queryCondition);
 
+    public Long count(QueryCondition queryCondition);
+
     public Boolean exist(Reading reading);
 
     public Reading findByTitle(String title);

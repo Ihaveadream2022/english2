@@ -2,6 +2,7 @@ package com.english.controller;
 
 import com.english.entity.ItemTts;
 import com.english.exception.ServiceRuntimeException;
+import com.english.model.JsonResponse;
 import com.english.service.impl.ItemTtsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,5 +38,15 @@ public class ItemTtsController {
                 throw new ServiceRuntimeException(e.getMessage());
             }
         }
+    }
+
+    @GetMapping("/get64")
+    public JsonResponse getTts64(@RequestParam String name, HttpServletResponse response) throws IOException {
+        ItemTts itemTts = itemTtsService.findByName(name);
+        if (itemTts != null && itemTts.getAudio() != null) {
+            return JsonResponse.success(itemTts);
+        }
+
+        return JsonResponse.error();
     }
 }

@@ -7,16 +7,16 @@
     }
     .el-menu-item:focus,
     .el-menu-item:hover {
-        background-color: #409eff !important;
+        background-color: #214999 !important;
     }
 }
 .el-button {
     padding: 8px 14px;
-    color: #409eff;
+    color: #214999;
     &.el-button--primary {
         color: #fff;
-        background-color: #409eff;
-        border-color: #409eff;
+        background-color: #214999;
+        border-color: #214999;
     }
 }
 .el-form-item__label {

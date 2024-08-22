@@ -93,11 +93,6 @@ export const itemExampleEdit = (data) =>
         url: segments.urlAss + "/item-examples/" + data.id,
         data: data,
     });
-export const itemStatics = () =>
-    requestBase.request({
-        method: "get",
-        url: segments.urlAss + "/items/statics",
-    });
 
 // Grammar
 export const grammarList = (params) =>
@@ -231,4 +226,68 @@ export const readingGenerate = () =>
     requestBase.request({
         method: "get",
         url: segments.urlAss + "/readings/generate",
+    });
+
+// listening
+export const listeningList = (params) =>
+    requestBase.request({
+        method: "get",
+        url: segments.urlAss + "/listenings",
+        params: params,
+    });
+export const listeningAdd = (data) =>
+    requestBase.request({
+        method: "post",
+        url: segments.urlAss + "/listenings",
+        data: data,
+    });
+export const listeningEdit = (data) =>
+    requestBase.request({
+        method: "put",
+        url: segments.urlAss + "/listenings/" + data.id,
+        data: data,
+    });
+export const listeningDelete = (data) =>
+    requestBase.request({
+        method: "delete",
+        url: segments.urlAss + "/listenings/" + data.id,
+    });
+
+// essay
+export const essayList = (params) =>
+    requestBase.request({
+        method: "get",
+        url: segments.urlAss + "/essays",
+        params: params,
+    });
+export const essayAdd = (data) =>
+    requestBase.request({
+        method: "post",
+        url: segments.urlAss + "/essays",
+        data: data,
+    });
+export const essayEdit = (data) =>
+    requestBase.request({
+        method: "put",
+        url: segments.urlAss + "/essays/" + data.id,
+        data: data,
+    });
+export const essayDelete = (data) =>
+    requestBase.request({
+        method: "delete",
+        url: segments.urlAss + "/essays/" + data.id,
+    });
+
+// Statics
+export const indexStatics = () =>
+    requestBase.request({
+        method: "get",
+        url: segments.urlAss + "/index/statics",
+    });
+
+export const ttsGet = (name) =>
+    requestBase.request({
+        method: "get",
+        url: segments.urlAss + "/tts/get64",
+        params: { name: name },
     });

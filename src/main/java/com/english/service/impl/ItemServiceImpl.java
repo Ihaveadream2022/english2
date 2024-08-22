@@ -4,6 +4,7 @@ import com.english.entity.Item;
 import com.english.entity.ItemExample;
 import com.english.entity.ItemTts;
 import com.english.exception.GlobalExceptionHandler;
+import com.english.exception.ServiceRuntimeException;
 import com.english.mapper.ItemMapper;
 import com.english.model.ItemHtml;
 import com.english.model.KeyValue;
@@ -22,8 +23,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -174,10 +177,12 @@ public class ItemServiceImpl implements ItemService {
         ThreadManager.getInstance().execute(timerTask);
     }
 
+    // 每天背、以总天数为周期
     public Map<String,Object> statics() {
         return statics(10);
     }
 
+    // 每天背、以总天数为周期
     public Map<String,Object> statics(int dataPageSize) {
         ItemQueryCondition itemQueryCondition = new ItemQueryCondition();
         long dataTotal = count(itemQueryCondition);
@@ -214,6 +219,61 @@ public class ItemServiceImpl implements ItemService {
         data.put("todayItemsPageEnd", dataItemsPageEnd);
         data.put("dateMonthOfTodayInt", monthOfTodayInt);
         data.put("dateTodayInt", todayInt);
+
+        return data;
+    }
+
+    // 周几背
+    public Map<String,Object> statics2() {
+        return statics2(10);
+    }
+
+    // 周几背
+    public Map<String,Object> statics2(int pageSize) {
+        // 可修改参数
+        int everyday = 300; // 每天背多少
+        Set<Integer> days = new HashSet<>(); // 周几背
+        days.add(1);
+        days.add(2);
+
+        // 总条数
+        ItemQueryCondition itemQueryCondition = new ItemQueryCondition();
+        long total = count(itemQueryCondition);
+//        long total = 900; // 总数据条数
+
+//        LocalDateTime now = LocalDateTime.of(2024,8,5,0,0);
+        LocalDateTime now = LocalDateTime.now();
+        DayOfWeek dayOfWeek = now.getDayOfWeek();
+        int dayOfWeekValue = dayOfWeek.getValue(); // 周内第几天
+        int weekOfYear = now.get(WeekFields.of(DayOfWeek.MONDAY, 1).weekOfYear()); // 年内第几周
+        int totalDaysNeed = (int) Math.ceil((double) total/everyday);
+        int todayComputedBase = (weekOfYear - 1) * days.size();
+        int todayComputed = 0;
+        if (days.size() * 51 <= totalDaysNeed) {
+            throw new ServiceRuntimeException("实际总天数应大于所需总天数，否则会有单词无法背覆盖。");
+        }
+        for (Integer day : days) {
+            if (dayOfWeekValue == day) {
+                todayComputed = todayComputedBase + day;
+            }
+        }
+        int todayCircle = ((todayComputed - 1 ) % totalDaysNeed) + 1;
+        int itemsCountFrom = todayComputed > 0? (todayCircle - 1) * everyday + 1: 0;
+        int itemsCountEnd = todayComputed > 0? todayCircle * everyday: 0;
+        int itemsPageFrom = todayComputed > 0? (todayCircle - 1) * (everyday/pageSize) + 1: 0;
+        int itemsPageEnd =  todayComputed > 0? todayCircle * (everyday/pageSize): 0;
+
+        Map<String,Object> data = new HashMap<>();
+        data.put("staticsTotalWords", total);
+        data.put("staticsCountEverydayToLearn", everyday);
+        data.put("staticsTotalDays", totalDaysNeed);
+        data.put("todayCircle", todayCircle);
+        data.put("todayItemsCountFrom", itemsCountFrom);
+        data.put("todayItemsCountEnd", itemsCountEnd);
+        data.put("todayItemsPageFrom", itemsPageFrom);
+        data.put("todayItemsPageEnd", itemsPageEnd);
+        data.put("dateDayOfWeekValue", dayOfWeekValue);
+        data.put("dateWeekOfYear", weekOfYear);
 
         return data;
     }

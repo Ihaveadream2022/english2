@@ -6,28 +6,36 @@
             </div>
         </div>
         <div style="width: 500px; margin: 10px">
-            <el-descriptions direction="vertical" :column="1" :labelStyle="{ background: '#409EFF', color: '#fff' }" border>
-                <el-descriptions-item label="单词总数 / 每天背数 / 所需天数 / 所需月数"> 
-                    {{ statics.staticsTotalWords }}个 / 
-                    {{ statics.staticsCountEverydayToLearn }}个 / 
-                    {{ statics.staticsTotalDays }}天 / 
-                    {{ statics.staticsCycleMonth }}个月内 </el-descriptions-item>
-                <el-descriptions-item label="今日要学"> 
-                    {{ statics.dateMonthOfTodayInt }}月{{ statics.dateTodayInt }}日(第{{ statics.todayDay }}天) / 
-                    第{{ statics.todayItemsCountFrom }} - {{ statics.todayItemsCountEnd }}个 / 
-                    第{{ statics.todayItemsPageFrom }} - {{ statics.todayItemsPageEnd }}页
-                </el-descriptions-item>
+            <el-divider content-position="center">{{ label }}</el-divider>
+            <el-descriptions direction="horizontal" :column="1" :labelStyle="{ color: '#999', 'line-height': '50px' }" border>
+                <template v-for="week in weeks">
+                    <el-descriptions-item :label="week.name" :key="week.name" :labelStyle="{ background: '#214999', color: '#fff', 'line-height': '50px' }">
+                        <div v-if="statics.dayOfWeek == week.value">
+                            <p>【{{ statics.dataType }}】 【共 {{ statics.data.staticsTotal }} 条】 【当前位置 {{ statics.data.todayCircle }} / {{ statics.data.staticsTotalDaysNeed }}】</p>
+                            <p>【每次学 {{ statics.data.staticsItemsPerDay }} 条, 今日从 {{ statics.data.todayItemsCountFrom }} ~ {{ statics.data.todayItemsCountEnd }} 条】</p>
+                        </div>
+                    </el-descriptions-item>
+                </template>
             </el-descriptions>
         </div>
     </div>
 </template>
 <script>
     /* eslint-disable */
-    import { GitPush, itemStatics } from "@/api/request";
+    import { GitPush, indexStatics } from "@/api/request";
     export default {
         data() {
             return {
                 statics: {},
+                weeks: [
+                    { value: 1, name: "周一 / Word" },
+                    { value: 2, name: "周二 / Word" },
+                    { value: 3, name: "周三 / Reading" },
+                    { value: 4, name: "周四 / Reading" },
+                    { value: 5, name: "周五 / Grammar" },
+                    { value: 6, name: "周六 / Listening" },
+                    { value: 7, name: "周日 / Writing" },
+                ],
             };
         },
         created() {
@@ -58,7 +66,7 @@
                 );
             },
             indexTodo() {
-                itemStatics()
+                indexStatics()
                     .then(
                         (res) => {
                             this.statics = res.data;
@@ -81,6 +89,11 @@
                     });
             },
         },
+        computed: {
+            label() {
+                return `【星期 ${this.statics.dayOfWeek} / 7】 【第 ${this.statics.weekOfYear} / 53 周】`;
+            },
+        },
     };
 </script>
 <style lang="scss" scoped>
@@ -96,7 +109,7 @@
             font-size: 14px;
             color: #333;
             padding-bottom: 10px;
-            border-bottom: 2px solid #409eff;
+            border-bottom: 2px solid #214999;
         }
     }
     .searchBox {

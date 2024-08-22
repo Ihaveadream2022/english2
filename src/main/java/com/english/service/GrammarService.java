@@ -10,6 +10,8 @@ public interface GrammarService {
 
     public HashMap<String, Object> pageList(QueryCondition queryCondition);
 
+    public Long count(QueryCondition queryCondition);
+
     public Boolean exist(Grammar grammar);
 
     public Grammar findByName(String name);

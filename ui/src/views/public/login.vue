@@ -6,7 +6,7 @@
         <div class="right">
             <div class="rcont">
                 <div class="top">
-                    <span v-on:click="requestLogout">欢迎登录</span>
+                    <span v-on:click="requestLogout">Welcome</span>
                     <span class="bar"></span>
                 </div>
                 <div class="bottom">
@@ -26,7 +26,7 @@
                                 <img :src="captchSrc" class="code-img" v-on:click="loadCaptch" />
                             </el-form-item>
                             <el-form-item class="login-btn">
-                                <el-button type="primary" :loading="submitButtonLoading" v-on:click="requestLogin">登 录</el-button>
+                                <el-button type="primary" :loading="submitButtonLoading" v-on:click="requestLogin">Login</el-button>
                             </el-form-item>
                         </div>
                     </el-form>
@@ -215,7 +215,7 @@
                         display: inline-block;
                         width: 60px;
                         height: 3px;
-                        background-color: #409eff;
+                        background-color: #214999;
                         position: absolute;
                         bottom: -3px;
                         left: 50%;
@@ -234,7 +234,7 @@
                             .fa {
                                 margin: 0 10px;
                                 font-size: 18px;
-                                color: #409eff;
+                                color: #214999;
                                 width: 16px;
                                 vertical-align: middle;
                             }
@@ -267,16 +267,16 @@
                             border: 0;
                             .el-button--primary {
                                 width: 100%;
-                                background-color: #409eff;
-                                border-color: #409eff;
+                                background-color: #214999;
+                                border-color: #214999;
                                 &:hover {
-                                    background: #0b59bd;
-                                    border-color: #0b59bd;
+                                    background: #214999;
+                                    border-color: #214999;
                                     color: #fff;
                                 }
                             }
                             .find-pass {
-                                color: #409eff;
+                                color: #214999;
                             }
                         }
                     }

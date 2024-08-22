@@ -45,7 +45,7 @@
         </div>
         <!-- 新建或编辑弹窗 -->
         <el-dialog :title="editDialog.title" :close-on-click-modal="false" :close-on-press-escape="false" class="vehm" :visible.sync="editDialog.visible" @close="editDialogClose" @opened="editDialogOpen" width="1200px" top="0" center>
-            <el-descriptions direction="vertical" :column="2" :labelStyle="{ background: '#409EFF', color: '#fff', 'text-align': 'center' }" border>
+            <el-descriptions direction="vertical" :column="2" :labelStyle="{ background: '#214999', color: '#fff', 'text-align': 'center' }" border>
                 <el-descriptions-item label="词义">
                     <el-input placeholder="" type="textarea" v-model="editDialog.form.meaning" maxlength="1024"></el-input>
                 </el-descriptions-item>
@@ -53,7 +53,7 @@
                     <div class="example-panel">
                         <el-input placeholder="" v-model="editDialog.dataEn"></el-input>
                         <el-button type="primary" @click="appendItems">+</el-button>
-                        <el-input placeholder="" v-model="editDialog.dataCn" type="textarea" maxlength="1024" style="margin-top: 10px; border-radius: 4px; border: 1px solid #409eff"></el-input>
+                        <el-input placeholder="" v-model="editDialog.dataCn" type="textarea" maxlength="1024" style="margin-top: 10px; border-radius: 4px; border: 1px solid #214999"></el-input>
                     </div>
                 </el-descriptions-item>
                 <el-descriptions-item label="同义单列表">
@@ -369,7 +369,7 @@
             font-size: 14px;
             color: #333;
             padding-bottom: 10px;
-            border-bottom: 2px solid #409eff;
+            border-bottom: 2px solid #214999;
         }
     }
     .searchBox {
@@ -426,12 +426,12 @@
                 padding: 0 10px;
             }
             .el-button--primary {
-                background-color: #409eff;
+                background-color: #214999;
             }
             .el-button--primary:focus,
             .el-button--primary:hover {
-                background: #0b59bd;
-                border-color: #0b59bd;
+                background: #214999;
+                border-color: #214999;
                 color: #fff;
             }
             .el-button {
@@ -448,7 +448,7 @@
             }
             .el-button--text:focus,
             .el-button--text:hover {
-                color: #0b59bd;
+                color: #214999;
             }
             .el-table__body tr.hover-row > td {
                 background-color: rgba(14, 110, 236, 0.3) !important;
@@ -462,7 +462,7 @@
             .panel {
                 margin: 2px 0 !important;
                 .el-button--primary {
-                    background: #409eff;
+                    background: #214999;
                 }
                 .el-button--danger {
                     color: #fff;
@@ -486,7 +486,7 @@
         }
         ::v-deep .el-dialog__header {
             padding: 8px 20px !important;
-            background-color: #409eff;
+            background-color: #214999;
             .el-dialog__title {
                 line-height: 20px;
                 font-size: 14px;
@@ -508,7 +508,7 @@
             font-size: 14px;
             margin-bottom: 20px;
             .iconFont {
-                color: #409eff;
+                color: #214999;
                 margin-right: 4px;
                 font-size: 14px;
             }
@@ -526,17 +526,17 @@
         }
         .el-divider__text {
             color: #fff;
-            background: #409eff;
+            background: #214999;
         }
         .el-divider {
-            background: #409eff;
+            background: #214999;
         }
         ::v-deep .el-collapse-item__wrap {
             padding: 30px 0;
             background: #eee;
         }
         ::v-deep .el-collapse-item__header {
-            background-color: #409eff;
+            background-color: #214999;
             padding-left: 10px;
             height: 32px;
             line-height: 32px;
@@ -573,7 +573,7 @@
                         color: #fff;
                     }
                     .el-input {
-                        border: 1px solid #409eff;
+                        border: 1px solid #214999;
                     }
                 }
             }

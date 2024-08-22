@@ -54,7 +54,11 @@
         </div>
         <div class="table" :style="{ height: table.height }">
             <el-table :data="table.tableList" ref="table" v-loading="table.loading" @row-click="tableHandleRowClick" highlight-current-row bordersize="mini" height="100%" style="width: 100%" center border>
-                <el-table-column prop="name" min-width="200" label="Name"> </el-table-column>
+                <el-table-column prop="name" min-width="300" label="Name">
+                    <template slot-scope="scope">
+                        {{ buildWord(scope.row) }}
+                    </template>
+                </el-table-column>
                 <el-table-column prop="common" min-width="150" label="common"></el-table-column>
                 <el-table-column prop="pronounce" min-width="100" label="Pronounce"> </el-table-column>
                 <el-table-column prop="verb" min-width="150" label="Verb" :show-overflow-tooltip="true"></el-table-column>
@@ -113,7 +117,7 @@
                             <el-input placeholder="" v-model="editDialog.form.verbPresentParticiple"></el-input>
                         </el-form-item>
                     </div>
-                    <el-descriptions direction="vertical" :column="2" :labelStyle="{ background: '#409EFF', color: '#fff', 'text-align': 'center' }" border>
+                    <el-descriptions direction="vertical" :column="2" :labelStyle="{ background: '#214999', color: '#fff', 'text-align': 'center' }" border>
                         <el-descriptions-item label="名词">
                             <el-input placeholder="" type="textarea" v-model="editDialog.form.noun" maxlength="1024"></el-input>
                         </el-descriptions-item>
@@ -149,7 +153,7 @@
         </el-dialog>
         <!-- 新建或编辑示例弹窗 -->
         <el-dialog :title="dataExampleDialog.title" :close-on-click-modal="false" :close-on-press-escape="false" class="vehm" :visible.sync="dataExampleDialog.visible" @close="exampleEditDialogClose" @opened="exampleEditDialogOpen" width="1200px" top="0" center>
-            <el-descriptions :title="dataExampleDialog.form.name + ' | ' + dataExampleDialog.form.common" direction="vertical" :column="2" :labelStyle="{ background: '#409EFF', color: '#fff', 'text-align': 'center' }" border>
+            <el-descriptions :title="dataExampleDialog.form.name + ' | ' + dataExampleDialog.form.common" direction="vertical" :column="2" :labelStyle="{ background: '#214999', color: '#fff', 'text-align': 'center' }" border>
                 <el-descriptions-item label="名词">
                     <span v-for="(v, k) in exampleSplit(dataExampleDialog.form.noun)" :key="k" v-on:click="exampleChoose(v)" class="meaning">
                         {{ v }}
@@ -192,7 +196,7 @@
                 <el-descriptions-item label="添加示例">
                     <div class="example-panel">
                         <el-input placeholder="" v-model="dataExampleDialog.exampleKey" clearable></el-input>
-                        <el-input placeholder="" v-model="dataExampleDialog.exampleContent" type="textarea" maxlength="1024" style="margin: 10px 0; border-radius: 4px; border: 1px solid #409eff"></el-input>
+                        <el-input placeholder="" v-model="dataExampleDialog.exampleContent" type="textarea" maxlength="1024" style="margin: 10px 0; border-radius: 4px; border: 1px solid #214999"></el-input>
                         <el-button type="primary" @click="appendExamples">+</el-button>
                     </div>
                 </el-descriptions-item>
@@ -690,7 +694,8 @@
             speechPlayList() {
                 if (this.table.tableList.length > 0) {
                     const index = this.speech.currentIndex == 0 ? this.table.tableList.length : this.speech.currentIndex;
-                    const intaval = this.speech.readingInterval + (Math.ceil(this.table.tableList[index - 1].name.length / 8) - 1) * 1000;
+                    const buildWord = this.buildWord(this.table.tableList[index - 1]);
+                    var intaval = this.speech.readingInterval + (Math.ceil(buildWord.replace(/\/|\s/g, "").length / 8) - 1) * this.speech.readingInterval;
                     console.log(intaval + "后播放" + this.table.tableList[this.speech.currentIndex].name);
                     this.speech.timeoutHanlder = setTimeout(() => {
                         const audio = this.$refs.audioList;
@@ -771,6 +776,20 @@
                 }
                 return type !== undefined ? [type, ...meanings] : meanings;
             },
+            buildWord(row) {
+                let returnStr = `${row.name}`;
+                const conditionVerbPresentParticiple = row.verbPresentParticiple && row.name + "ing" != row.verbPresentParticiple && row.name.slice(0, -1) + "ing" != row.verbPresentParticiple;
+                const conditionVerbPastParticiple = row.verbPastParticiple && row.name + "d" != row.verbPastParticiple && row.name + "ed" != row.verbPastParticiple && row.name.slice(0, -1) + "ied" != row.verbPastParticiple;
+                const conditionVerbPastTense = row.verbPastTense && row.name + "d" != row.verbPastTense && row.name + "ed" != row.verbPastTense && row.name.slice(0, -1) + "ied" != row.verbPastTense;
+                const conditionNounPlural = row.nounPlural && row.name + "s" != row.nounPlural && row.name + "es" != row.nounPlural && row.name.slice(0, -1) + "ies" != row.nounPlural;
+                if (conditionNounPlural === true) {
+                    returnStr += ` / ${row.nounPlural}`;
+                }
+                if (conditionVerbPresentParticiple === true || conditionVerbPastParticiple === true || conditionVerbPastTense === true) {
+                    returnStr += ` / ${row.verbPastTense} / ${row.verbPastParticiple} /  ${row.verbPresentParticiple}`;
+                }
+                return returnStr;
+            },
         },
         computed: {},
     };
@@ -788,7 +807,7 @@
             font-size: 14px;
             color: #333;
             padding-bottom: 10px;
-            border-bottom: 2px solid #409eff;
+            border-bottom: 2px solid #214999;
         }
     }
     .searchBox {
@@ -845,7 +864,7 @@
                 padding: 0 10px;
             }
             .el-button--primary {
-                background-color: #409eff;
+                background-color: #214999;
                 &.example-btn {
                     position: relative;
                     .example-num {
@@ -858,8 +877,8 @@
             }
             .el-button--primary:focus,
             .el-button--primary:hover {
-                background: #0b59bd;
-                border-color: #0b59bd;
+                background: #214999;
+                border-color: #214999;
                 color: #fff;
             }
             .el-button {
@@ -876,7 +895,7 @@
             }
             .el-button--text:focus,
             .el-button--text:hover {
-                color: #0b59bd;
+                color: #214999;
             }
             .el-table__body tr.hover-row > td {
                 background-color: rgba(14, 110, 236, 0.3) !important;
@@ -890,7 +909,7 @@
             .panel {
                 margin: 2px 0 !important;
                 .el-button--primary {
-                    background: #409eff;
+                    background: #214999;
                 }
                 .el-button--danger {
                     color: #fff;
@@ -914,7 +933,7 @@
         }
         ::v-deep .el-dialog__header {
             padding: 8px 20px !important;
-            background-color: #409eff;
+            background-color: #214999;
             .el-dialog__title {
                 line-height: 20px;
                 font-size: 14px;
@@ -936,7 +955,7 @@
             font-size: 14px;
             margin-bottom: 20px;
             .iconFont {
-                color: #409eff;
+                color: #214999;
                 margin-right: 4px;
                 font-size: 14px;
             }
@@ -954,17 +973,17 @@
         }
         .el-divider__text {
             color: #fff;
-            background: #409eff;
+            background: #214999;
         }
         .el-divider {
-            background: #409eff;
+            background: #214999;
         }
         ::v-deep .el-collapse-item__wrap {
             padding: 30px 0;
             background: #eee;
         }
         ::v-deep .el-collapse-item__header {
-            background-color: #409eff;
+            background-color: #214999;
             padding-left: 10px;
             height: 32px;
             line-height: 32px;
@@ -1008,7 +1027,7 @@
                         color: #fff;
                     }
                     .el-input {
-                        border: 1px solid #409eff;
+                        border: 1px solid #214999;
                     }
                 }
             }

@@ -9,11 +9,15 @@ import com.english.model.enums.QueryOrder;
 import com.english.service.impl.ItemExampleServiceImpl;
 import com.english.service.impl.ItemServiceImpl;
 import com.english.service.impl.ItemTtsServiceImpl;
+import com.english.service.impl.StaticsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/items")
@@ -28,12 +32,33 @@ public class ItemController {
     @Autowired
     ItemTtsServiceImpl itemTtsService;
 
+    @Autowired
+    StaticsServiceImpl staticsService;
+
     @GetMapping
     public JsonResponse list(ItemQueryCondition itemQueryCondition) {
         if (itemQueryCondition.getJumpToToday() == 1) {
-            Map<String,Object> statics = itemService.statics(itemQueryCondition.getPageSize());
-            int pageFrom = (int) statics.get("todayItemsPageFrom");
-            int pageEnd = (int) statics.get("todayItemsPageEnd");
+            /* 可修改参数 */
+            int itemsPerDay = 300; // 每天背多少
+            Set<Integer> days = new HashSet<>();  // 周几背
+            days.add(1);
+            days.add(2);
+            ItemQueryCondition itemQueryCondition1 = new ItemQueryCondition();
+            long total = itemService.count(itemQueryCondition1);   // 总条数
+
+            /* 计算 */
+            Map<String,Object> statics = staticsService.statics(itemsPerDay, total, days);
+            int itemsFrom = (int) statics.get("todayItemsCountFrom");
+            int itemsEnd = (int) statics.get("todayItemsCountEnd");
+            int todayCircle = (int) statics.get("todayCircle");
+            int pageSize = itemQueryCondition.getPageSize(); // 每页条数
+            int pageFrom = itemsFrom > 0? (todayCircle - 1) * (itemsPerDay/pageSize) + 1: 0;
+            int pageEnd =  itemsEnd > 0? todayCircle * (itemsPerDay/pageSize): 0;
+            // 今日不是背的日子
+            if (pageFrom == 0 && pageEnd == 0) {
+                return JsonResponse.error("今日无数据");
+            }
+            // 强制落在今天的区间内
             if (itemQueryCondition.getPageNo() < pageFrom || itemQueryCondition.getPageNo() > pageEnd) {
                 itemQueryCondition.setPageNo(pageFrom);
             }
@@ -110,13 +135,5 @@ public class ItemController {
             page++;
             continueFlag = list.size() > 0;
         } while (continueFlag);
-    }
-
-    @GetMapping("/statics")
-    public JsonResponse statics() {
-
-        Map<String,Object> data = itemService.statics();
-
-        return JsonResponse.success(data);
     }
 }

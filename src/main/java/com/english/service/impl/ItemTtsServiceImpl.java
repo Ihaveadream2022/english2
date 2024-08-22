@@ -105,11 +105,36 @@ public class ItemTtsServiceImpl implements ItemTtsService {
                 try {
                     // Create audio
                     ItemTts itemTts = item.getTts();
+                    String normalPlural1 = itemTts.getName()+"s";
+                    String normalPlural2 = itemTts.getName()+"es";
+                    String normalPlural3 = itemTts.getName().substring(0, itemTts.getName().length() - 1) +"ies";
+                    String normalPast1 = itemTts.getName()+"d";
+                    String normalPast2 = itemTts.getName()+"ed";
+                    String normalPast3 = itemTts.getName().substring(0, itemTts.getName().length() - 1) +"ied";
+                    String normalPresent1 = itemTts.getName()+"ing";
+                    String normalPresent2 = itemTts.getName().substring(0, itemTts.getName().length() - 1) +"ing";
+                    boolean displayAll = false;
+                    StringBuilder audioContent = new StringBuilder(itemTts.getName());
+                    if (item.getVerbPastTense() != null && !item.getVerbPastTense().equals(normalPast1) && !item.getVerbPastTense().equals(normalPast2) && !item.getVerbPastParticiple().equals(normalPast3)) {
+                        displayAll = true;
+                    }
+                    if (item.getVerbPastParticiple() != null && !item.getVerbPastParticiple().equals(normalPast1) && !item.getVerbPastParticiple().equals(normalPast2) && !item.getVerbPastParticiple().equals(normalPast3)) {
+                        displayAll = true;
+                    }
+                    if (item.getVerbPresentParticiple() != null && !item.getVerbPresentParticiple().equals(normalPresent1) && !item.getVerbPresentParticiple().equals(normalPresent2)) {
+                        displayAll = true;
+                    }
+                    if (displayAll) {
+                        audioContent.append(", " + item.getVerbPastTense() + ", " + item.getVerbPastParticiple() + ", " + item.getVerbPresentParticiple());
+                    }
+                    if (item.getNounPlural() != null && !item.getNounPlural().equals(normalPlural1) && !item.getNounPlural().equals(normalPlural2) && !item.getNounPlural().equals(normalPlural3)) {
+                        audioContent.append(", " + item.getNounPlural());
+                    }
                     String scriptPath = "python " + System.getProperty("user.dir") + "/scripts/english.py";
                     String pathEN = String.format("%s/html/audio/%s.wav", System.getProperty("user.dir"), itemTts.getName().replace(" ","_"));
                     String pathCN = String.format("%s/html/audio/%s_cn.wav", System.getProperty("user.dir"), itemTts.getName().replace(" ","_"));
                     String[] commands = {
-                        scriptPath + " \"" + itemTts.getName() + "\"" + " \"1\"" + " \"" + pathEN + "\"",
+                        scriptPath + " \"" + audioContent + "\"" + " \"1\"" + " \"" + pathEN + "\"",
                         scriptPath + " \"" + item.getCommon() + "\"" + " \"2\"" + " \"" + pathCN + "\""
                     };
                     for (String command: commands) {

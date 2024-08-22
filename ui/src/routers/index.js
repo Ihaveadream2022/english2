@@ -52,9 +52,14 @@ const routes = [
                 component: () => import(/* webpackChunkName: 'dynamic' */ "@/views/grammar/index.vue"),
             },
             {
-                name: "reading",
-                path: "/reading",
-                component: () => import(/* webpackChunkName: 'dynamic' */ "@/views/reading/index.vue"),
+                name: "essay",
+                path: "/essay",
+                component: () => import(/* webpackChunkName: 'dynamic' */ "@/views/essay/index.vue"),
+            },
+            {
+                name: "listening",
+                path: "/listening",
+                component: () => import(/* webpackChunkName: 'dynamic' */ "@/views/listening/index.vue"),
             },
         ],
     },
