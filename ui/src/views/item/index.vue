@@ -274,9 +274,14 @@
             };
         },
         created() {
+            console.log("created");
             this.tableGetList(this.table.searchForm);
         },
+        updated() {
+            console.log("Updated");
+        },
         mounted() {
+            console.log("mounted");
             let h = this.$refs.searchBox.offsetHeight;
             let pH = document.documentElement.clientHeight;
             this.table.height = pH - h - 120 + "px";

@@ -492,10 +492,10 @@
             },
             speechPlayList() {
                 if (this.table.tableList.length > 0) {
-                    const index = this.speech.currentIndex == 0 ? this.viewDialogGetVocabulary.length : this.speech.currentIndex;
-                    const buildWord = this.viewDialogGetVocabulary[index - 1]["form"];
+                    const lastIndex = this.speech.currentIndex == 0 ? this.viewDialogGetVocabulary.length - 1 : this.speech.currentIndex - 1;
+                    const buildWord = this.viewDialogGetVocabulary[lastIndex]["form"];
                     let intaval = 2000 + (Math.ceil(buildWord.replace(/\/|\s/g, "").length / 8) - 1) * 2000;
-                    console.log(intaval + "后播放" + this.table.tableList[this.speech.currentIndex].name);
+                    console.log(intaval + "后播放" + this.viewDialogGetVocabulary[this.speech.currentIndex].key);
                     this.speech.timeoutHanlder = setTimeout(() => {
                         const audio = this.$refs.audioList;
                         audio.src = this.speech.type == 1 ? "data:audio/wav;base64," + this.viewDialogGetVocabulary[this.speech.currentIndex].tts.audio : "data:audio/wav;base64," + this.viewDialogGetVocabulary[this.speech.currentIndex].tts.audioCn;
