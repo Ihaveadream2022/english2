@@ -21,7 +21,12 @@
 		SELECT count(id) AS `total` FROM `essay` <include refid="selectWhere" />
 	</select>
 	<select id="selectLimited" parameterType="QueryCondition" resultMap="EssayMapper">
-		SELECT * FROM `essay` <include refid="selectWhere" /> ORDER BY `id` DESC
+		SELECT * FROM `essay` <include refid="selectWhere" />
+		<choose>
+			<when test="orderType != null and orderType == 'ASC'"> ORDER BY `id` ASC</when>
+			<when test="orderType != null and orderType == 'DESC'"> ORDER BY `id` DESC</when>
+			<otherwise>ORDER BY `id` DESC</otherwise>
+		</choose>
 		<if test="pageSize != null and pageSize > 0">
 			<if test="offset != null and offset >= 0">
 				LIMIT #{offset},#{pageSize}

@@ -25,7 +25,7 @@ interface RequestItemParams {
     orderType?: string;
 }
 interface RequestItemData {
-    id?: number | null;
+    id?: number;
     name: string;
     common?: string;
     pronounce?: string;
@@ -41,9 +41,10 @@ interface RequestItemData {
     conjunction?: string;
     preposition?: string;
     comment?: string;
+    tts?: any;
 }
 interface RequestItemDataDelete {
-    id: number | null;
+    id: number;
 }
 export type { RequestItemParams, RequestItemData, RequestItemDataDelete };
 /* Item */
@@ -52,7 +53,11 @@ export type { RequestItemParams, RequestItemData, RequestItemDataDelete };
 interface RequestTtsData {
     name: string;
 }
-export type { RequestTtsData };
+interface PlayLoopAudio {
+    playing: null | boolean;
+    playingIndex: number;
+}
+export type { RequestTtsData, PlayLoopAudio };
 /* TTS */
 
 /* Store */
@@ -67,3 +72,27 @@ interface StoreReducerStateCounter {
 }
 export type { StoreReducerStateAuth, StoreReducerStateCollapse, StoreReducerStateCounter };
 /* Store */
+
+/* Essay */
+interface RequestEssayParams {
+    pageSize: number;
+    pageNo: number;
+    keyword?: string;
+    orderType?: string;
+}
+interface RequestEssayData {
+    id?: number;
+    title: string;
+    content: string;
+    vocabulary?: string;
+}
+interface RequestEssayDataDelete {
+    id: number;
+}
+interface VocabularyData {
+    key: string;
+    value: string;
+    form: string;
+}
+export type { RequestEssayParams, RequestEssayData, RequestEssayDataDelete, VocabularyData };
+/* Essay */

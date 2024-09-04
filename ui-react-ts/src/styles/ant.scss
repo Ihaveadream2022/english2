@@ -27,8 +27,17 @@
 .ant-table-tbody > tr:nth-child(odd) {
     background-color: #fafafa;
 }
-
 .ant-table-tbody > tr:nth-child(even) {
     background-color: #ffffff;
+}
+.ant-table-tbody tr.clicked td {
+    cursor: pointer;
+    background-color: #ccc !important;
+}
+.ant-table-container table > thead > tr:first-child > *:first-child {
+    border-start-start-radius: 6px !important;
+}
+.ant-table-container table > thead > tr:first-child > *:last-child {
+    border-start-end-radius: 6px !important;
 }
 // table

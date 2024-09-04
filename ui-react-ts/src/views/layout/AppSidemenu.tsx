@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Layout, Menu } from "antd";
 import type { MenuProps } from "antd";
-import { UserOutlined, HomeOutlined, BookOutlined } from "@ant-design/icons";
+import { UserOutlined, HomeOutlined, BookOutlined, ProfileOutlined } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
 import { toggle } from "../../stores/reducers/collapse";
 import { RootState } from "../../stores";
@@ -27,6 +27,12 @@ const items = [
         key: "Item",
         icon: <BookOutlined />,
         children: [{ key: "/item", label: "Item" }],
+    },
+    {
+        label: "Essay",
+        key: "Essay",
+        icon: <ProfileOutlined />,
+        children: [{ key: "/essay", label: "Essay" }],
     },
 ];
 

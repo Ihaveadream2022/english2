@@ -1,10 +1,10 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Table, Input, Button, Modal, Form, Space, Row, Col, message, Popconfirm, Select } from "antd";
 import type { PaginationProps, GetProps, InputRef } from "antd";
 import { itemList, itemAdd, itemEdit, itemDelete, ttsGet } from "../../api/request";
 import "./index.scss";
-import { PlusCircleOutlined, QuestionCircleOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from "@ant-design/icons";
-import { RequestItemParams, RequestItemData, RequestItemDataDelete } from "../../types";
+import { PlusCircleOutlined, PlayCircleOutlined, QuestionCircleOutlined, EditOutlined, DeleteOutlined, SearchOutlined, LoadingOutlined } from "@ant-design/icons";
+import { RequestItemParams, RequestItemData, RequestItemDataDelete, PlayLoopAudio } from "../../types";
 const { Column } = Table;
 const { Search } = Input;
 type SearchProps = GetProps<typeof Input.Search>;
@@ -16,8 +16,11 @@ function Item() {
     const [dataTableList, setDataTableList] = useState<RequestItemData[]>([]);
     const [dataTableLoading, setDataTableLoading] = useState(false);
     const [dataTableCurrentRow, setDataTableCurrentRow] = useState<RequestItemData>();
+    const [audioLoopPlay, setAudioLoopPlay] = useState<boolean>(false);
+    const [audioLoopPlayIndex, setAudioLoopPlayIndex] = useState<number>(0);
     const refInputPaste = useRef<InputRef>(null);
     const refAudio = useRef<HTMLAudioElement>(null);
+    const refAudioLoop = useRef<HTMLAudioElement>(null);
     const [messageApi, contextHolder] = message.useMessage();
     const [form] = Form.useForm();
     const getTableList = async (queryParams: RequestItemParams) => {
@@ -39,6 +42,7 @@ function Item() {
     };
     // 包括翻页和每页数变化
     const onChangePage: PaginationProps["onChange"] = (current, pageSize) => {
+        setStoping();
         getTableList({ pageNo: current, pageSize: pageSize });
     };
     const onSearch: SearchProps["onSearch"] = (value) => {
@@ -87,7 +91,7 @@ function Item() {
                                         setAddDialogVisible(false);
                                         setTitleDialog("Add Item");
                                         form.resetFields();
-                                        getTableList({ pageNo: 1, pageSize: 10 });
+                                        getTableList(dataQueryParams);
                                     },
                                 });
                             }
@@ -116,11 +120,10 @@ function Item() {
         form.resetFields();
         messageApi.destroy();
     };
-    const onConfirmDelete = async (id: number | undefined | null) => {
+    const onConfirmDelete = async (id: number) => {
         try {
             messageApi.open({ type: "loading", content: "Loading..", duration: 0 });
-            const dataID = id === undefined ? null : id;
-            const data: RequestItemDataDelete = { id: dataID };
+            const data: RequestItemDataDelete = { id: id };
             const res = await itemDelete(data);
             if (res.code) {
                 messageApi.destroy();
@@ -164,7 +167,7 @@ function Item() {
     const getRowClassName = (record: RequestItemData) => {
         return dataTableCurrentRow !== undefined && record.id === dataTableCurrentRow.id ? "clicked" : "";
     };
-    const onChange = (value: string) => {
+    const onChangeOrder = (value: string) => {
         getTableList({ ...dataQueryParams, orderType: `${value}` });
     };
     const onPasteData = () => {
@@ -219,6 +222,58 @@ function Item() {
             }
         }
     };
+    const onClickPlay = () => {
+        setAudioLoopPlay((valueOld) => {
+            const valueNew = !valueOld;
+            if (refAudioLoop.current) {
+                if (valueOld === false) {
+                    refAudioLoop.current.addEventListener("ended", onPlaying, false);
+                    onPlaying();
+                }
+                if (valueOld === true) {
+                    refAudioLoop.current.removeEventListener("ended", onPlaying, false);
+                    setAudioLoopPlayIndex(0);
+                }
+            }
+            return valueNew;
+        });
+    };
+    const getName = (name: string, row: RequestItemData) => {
+        if (row.verbPastTense && row.name + "d" !== row.verbPastTense && row.name + "ed" !== row.verbPastTense && row.name.slice(0, -1) + "ied" !== row.verbPastTense) {
+            name += ` / ${row.verbPastTense}`;
+        }
+        if (row.verbPastParticiple && row.name + "d" !== row.verbPastParticiple && row.name + "ed" !== row.verbPastParticiple && row.name.slice(0, -1) + "ied" !== row.verbPastParticiple) {
+            name += ` / ${row.verbPastParticiple}`;
+        }
+        if (row.verbPresentParticiple && row.name + "ing" !== row.verbPresentParticiple && row.name.slice(0, -1) + "ing" !== row.verbPresentParticiple) {
+            name += ` / ${row.verbPresentParticiple}`;
+        }
+        if (row.nounPlural && row.name + "s" !== row.nounPlural && row.name + "es" !== row.nounPlural && row.name.slice(0, -1) + "ies" !== row.nounPlural) {
+            name += ` / ${row.nounPlural}`;
+        }
+        return <div>{name}</div>;
+    };
+    const setStoping = () => {
+        setAudioLoopPlay(false);
+        setAudioLoopPlayIndex(0);
+        refAudioLoop.current?.removeEventListener("ended", onPlaying, false);
+    };
+    const onPlaying = useCallback(() => {
+        setAudioLoopPlayIndex((valueOld) => {
+            const valueNew = valueOld + 1;
+            setTimeout(() => {
+                if (refAudioLoop.current && dataTableList.length > 0) {
+                    refAudioLoop.current.src = "data:audio/wav;base64," + dataTableList[valueOld].tts.audio;
+                    refAudioLoop.current.load();
+                    refAudioLoop.current.play();
+                    if (valueNew >= dataTableList.length) {
+                        setAudioLoopPlayIndex(0);
+                    }
+                }
+            }, 2000);
+            return valueNew;
+        });
+    }, [dataTableList]);
 
     useEffect(() => {
         getTableList(dataQueryParams);
@@ -228,18 +283,21 @@ function Item() {
         setTimeout(() => refInputPaste.current?.focus(), 1);
     }, [AddDialogVisible]); // eslint-disable-line
 
+    console.log("Loaded");
+
     return (
         <div>
             {contextHolder}
-            <Row className="title">
-                <h4>Item Management</h4>
-            </Row>
+            {/* prettier-ignore */}
+            <Row className="title"><h4>Item Management</h4></Row>
             <Row>
                 <Space className="panel" style={{ marginBottom: "10px" }}>
                     {/* prettier-ignore */}
-                    <Button onClick={onClickAdd}><PlusCircleOutlined /> Add</Button>
+                    <Button onClick={onClickAdd}><PlusCircleOutlined /></Button>
                     {/* prettier-ignore */}
-                    <Select defaultValue="DESC" onChange={onChange} options={[{ value: "DESC", label: "DESC" },{ value: "ASC", label: "ASC" }]} />
+                    <Button onClick={onClickPlay}>{audioLoopPlay? <LoadingOutlined />: <PlayCircleOutlined />}</Button>
+                    {/* prettier-ignore */}
+                    <Select defaultValue="DESC" onChange={onChangeOrder} options={[{ value: "DESC", label: "DESC" },{ value: "ASC", label: "ASC" }]} style={{width: 80}} />
                     {/* prettier-ignore */}
                     <Search placeholder="input search text" allowClear suffix={<SearchOutlined />} enterButton="Search" onSearch={onSearch} style={{width: 230}} />
                 </Space>
@@ -252,7 +310,7 @@ function Item() {
                     };
                 }}
                 pagination={{ position: ["bottomLeft"], current: dataQueryParams.pageNo, pageSize: dataQueryParams.pageSize, total: dataTableListTotal, onChange: onChangePage }}>
-                <Column title="Name" dataIndex="name" key="name" width={"150px"} align="center" render={(text) => <span style={{ fontWeight: "bold" }}>{text}</span>} />
+                <Column title="Name" dataIndex="name" key="name" width={"250px"} align="center" render={(name: any, record: RequestItemData) => getName(name, record)} />
                 <Column title="Common" dataIndex="common" key="common" width={"150px"} align="center" />
                 <Column title="Verb" dataIndex="verb" key="verb" width={"200px"} align="center" ellipsis />
                 <Column title="Noun" dataIndex="noun" key="noun" width={"200px"} align="center" ellipsis />
@@ -265,7 +323,7 @@ function Item() {
                      render={(_: any, record: RequestItemData) => (
                         <Space>
                             <Button type="primary" onClick={() => onClickEdit(record)} ghost><EditOutlined /> Edit</Button>
-                            <Popconfirm title="Warning" description="Are you sure to do this?" icon={<QuestionCircleOutlined style={{ color: "red" }} />} onConfirm={() => onConfirmDelete(record.id)}>
+                            <Popconfirm title="Warning" description="Are you sure to do this?" icon={<QuestionCircleOutlined style={{ color: "red" }} />} onConfirm={() => { if (record.id !== undefined) onConfirmDelete(record.id) } }>
                                 <Button type="primary" danger ghost><DeleteOutlined />Delete</Button>
                             </Popconfirm>
                         </Space>  
@@ -383,6 +441,7 @@ function Item() {
             </Modal>
             <div style={{ display: "none" }}>
                 <audio ref={refAudio}></audio>
+                <audio ref={refAudioLoop}></audio>
             </div>
         </div>
     );

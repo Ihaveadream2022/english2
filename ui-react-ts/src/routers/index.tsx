@@ -5,6 +5,7 @@ import Role from "../views/auth/Role";
 import Login from "../views/public/Login";
 import Home from "../views/home";
 import Item from "../views/item";
+import Essay from "../views/essay";
 
 const routes = [
     {
@@ -31,6 +32,10 @@ const routes = [
                 path: "item",
                 element: <Item />,
             },
+            {
+                path: "essay",
+                element: <Essay />,
+            }
         ],
     },
     {

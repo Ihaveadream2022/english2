@@ -14,9 +14,9 @@ const root = ReactDOM.createRoot(rootElement);
 
 // prettier-ignore
 root.render(
-    <React.StrictMode>
+    // <React.StrictMode>
         <Provider store={store}>
             <RouterProvider router={router} />
         </Provider>
-    </React.StrictMode>
+    // </React.StrictMode>
 );
