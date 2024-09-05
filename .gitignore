@@ -37,3 +37,6 @@ nbdist/
 !*/build/*.java
 !*/build/*.html
 !*/build/*.xml
+
+# SQL #
+scripts/english_audio.sql
