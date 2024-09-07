@@ -6,6 +6,7 @@ import Login from "../views/public/Login";
 import Home from "../views/home";
 import Item from "../views/item";
 import Essay from "../views/essay";
+import Grammar from "../views/grammar";
 
 const routes = [
     {
@@ -35,7 +36,11 @@ const routes = [
             {
                 path: "essay",
                 element: <Essay />,
-            }
+            },
+            {
+                path: "grammar",
+                element: <Grammar />,
+            },
         ],
     },
     {

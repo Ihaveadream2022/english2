@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { useState, useRef } from "react";
 import { Table, Button, Input, Space, Popconfirm } from "antd";
 import type { GetProps, InputRef } from "antd";
 import { itemList, ttsGet } from "../../api/request";
 import { SearchOutlined, ClearOutlined, QuestionCircleOutlined, DeleteOutlined } from "@ant-design/icons";
 import { RequestItemParams, RequestItemData, VocabularyData } from "../../types";
+import { ContextVocabulary } from "../components/context";
 import "./Vocabulary.scss";
 
 type SearchProps = GetProps<typeof Input.Search>;
@@ -23,6 +24,7 @@ const Vocabulary: React.FC<props> = ({ content, onChange }) => {
     const [keywords, setKeywords] = useState<string>("");
     const refAudio = useRef<HTMLAudioElement>(null);
     const refSearch = useRef<InputRef>(null);
+    const random = useContext(ContextVocabulary);
     const [initialContent, setInitialContent] = useState<VocabularyData[]>(JSON.parse(content));
     const getItemList = async (queryParams: RequestItemParams) => {
         try {
@@ -38,6 +40,10 @@ const Vocabulary: React.FC<props> = ({ content, onChange }) => {
     };
     const onSearch: SearchProps["onSearch"] = (value) => {
         getItemList({ ...dataQueryParams, keyword: `${value}` });
+    };
+    const onChangeSearch = (target: HTMLInputElement) => {
+        setKeywords(target.value);
+        getItemList({ ...dataQueryParams, keyword: `${target.value}` });
     };
     const getRowClassName = (record: VocabularyData) => {
         return dataTableCurrentRow !== undefined && record.key === dataTableCurrentRow.key ? "clicked" : "";
@@ -109,18 +115,19 @@ const Vocabulary: React.FC<props> = ({ content, onChange }) => {
         setDataTableList(JSON.parse(dataNew));
         onChange(dataNew);
     };
+
+    // Everytime Opened, Reset All Data
     useEffect(() => {
-        if (content && content !== JSON.stringify(dataTableList)) {
-            console.log("useEffect - content");
-            const data = JSON.parse(content);
-            const dataInit = JSON.parse(content);
-            setDataTableList(data);
-            setInitialContent(dataInit);
-            setDataItemList([]);
-            setKeywords("");
-            setSearchTableVisible(false);
-        }
-    }, [content]);
+        console.log("Reset All Data");
+        const data = JSON.parse(content);
+        const dataInit = JSON.parse(content);
+        setDataTableList(data);
+        setInitialContent(dataInit);
+        setDataItemList([]);
+        setKeywords("");
+        setSearchTableVisible(false);
+        setDataTableCurrentRow(undefined);
+    }, [random]);
 
     console.log("Vocabulary Loaded");
 
@@ -131,7 +138,7 @@ const Vocabulary: React.FC<props> = ({ content, onChange }) => {
                     {/* prettier-ignore */}
                     <Button onClick={onClickClear}><ClearOutlined /></Button>
                     {/* prettier-ignore */}
-                    <Search ref={refSearch} placeholder="input search text" allowClear suffix={<SearchOutlined />} value={keywords}  onChange={(e) => setKeywords(e.target.value)} onClear={() => {setSearchTableVisible(false)}} enterButton="Search" onSearch={onSearch} style={{width: 230}} />
+                    <Search ref={refSearch} placeholder="input search text" allowClear suffix={<SearchOutlined />} value={keywords}  onChange={(e) => onChangeSearch(e.target)} onClear={() => {setSearchTableVisible(false)}} enterButton="Search" onSearch={onSearch} style={{width: 230}} />
                 </Space>
                 {/* prettier-ignore */}
                 <Table bordered dataSource={dataTableList} rowKey={"key"} pagination={false} rowClassName={getRowClassName}

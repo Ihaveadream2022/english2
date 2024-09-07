@@ -96,3 +96,22 @@ interface VocabularyData {
 }
 export type { RequestEssayParams, RequestEssayData, RequestEssayDataDelete, VocabularyData };
 /* Essay */
+
+/* Grammar */
+interface RequestGrammarParams {
+    pageSize: number;
+    pageNo: number;
+    keyword?: string;
+    orderType?: string;
+}
+interface RequestGrammarData {
+    id?: number;
+    name: string;
+    content: string;
+    sort?: number;
+}
+interface RequestGrammarDataDelete {
+    id: number;
+}
+export type { RequestGrammarParams, RequestGrammarData, RequestGrammarDataDelete };
+/* Grammar */

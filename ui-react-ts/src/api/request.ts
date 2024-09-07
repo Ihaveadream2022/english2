@@ -1,5 +1,5 @@
 import requestBase from "./requestBase";
-import { RequestResponse, RequestItemParams, RequestItemData, RequestItemDataDelete, RequestTtsData, RequestEssayParams, RequestEssayData, RequestEssayDataDelete } from "../types";
+import { RequestResponse, RequestItemParams, RequestItemData, RequestItemDataDelete, RequestTtsData, RequestEssayParams, RequestEssayData, RequestEssayDataDelete, RequestGrammarParams, RequestGrammarData, RequestGrammarDataDelete } from "../types";
 
 export const itemList = (params: RequestItemParams): Promise<RequestResponse> =>
     requestBase.request({
@@ -62,3 +62,30 @@ export const essayDelete = (data: RequestEssayDataDelete): Promise<RequestRespon
         url: "/essays/" + data.id,
     });
 // Essay
+
+// Grammars
+export const grammarList = (params: RequestGrammarParams): Promise<RequestResponse> =>
+    requestBase.request({
+        method: "get",
+        url: "/grammars",
+        params: params,
+    });
+export const grammarAdd = (data: RequestGrammarData): Promise<RequestResponse> =>
+    requestBase.request({
+        method: "post",
+        url: "/grammars",
+        data: data,
+    });
+export const grammarEdit = (data: RequestGrammarData): Promise<RequestResponse> => {
+    return requestBase.request({
+        method: "put",
+        url: "/grammars/" + data.id,
+        data: data,
+    });
+};
+export const grammarDelete = (data: RequestGrammarDataDelete): Promise<RequestResponse> =>
+    requestBase.request({
+        method: "delete",
+        url: "/grammars/" + data.id,
+    });
+// Grammars

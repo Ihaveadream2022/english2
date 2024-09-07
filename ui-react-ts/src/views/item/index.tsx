@@ -310,14 +310,14 @@ function Item() {
                     };
                 }}
                 pagination={{ position: ["bottomLeft"], current: dataQueryParams.pageNo, pageSize: dataQueryParams.pageSize, total: dataTableListTotal, onChange: onChangePage }}>
-                <Column title="Name" dataIndex="name" key="name" width={"250px"} align="center" render={(name: any, record: RequestItemData) => getName(name, record)} />
-                <Column title="Common" dataIndex="common" key="common" width={"150px"} align="center" />
-                <Column title="Verb" dataIndex="verb" key="verb" width={"200px"} align="center" ellipsis />
-                <Column title="Noun" dataIndex="noun" key="noun" width={"200px"} align="center" ellipsis />
-                <Column title="Adj" dataIndex="adjective" key="adjective" width={"200px"} align="center" ellipsis />
-                <Column title="Adv" dataIndex="adverb" key="adverb" width={"200px"} align="center" ellipsis />
-                <Column title="Conj" dataIndex="conjunction" key="conjunction" width={"50px"} align="center" ellipsis />
-                <Column title="Prep" dataIndex="preposition" key="preposition" width={"50px"} align="center" ellipsis />
+                <Column title="Name" dataIndex="name" key="name" width={"250px"} align="left" render={(name: any, record: RequestItemData) => getName(name, record)} />
+                <Column title="Common" dataIndex="common" key="common" width={"150px"} align="left" />
+                <Column title="Verb" dataIndex="verb" key="verb" width={"200px"} align="left" ellipsis />
+                <Column title="Noun" dataIndex="noun" key="noun" width={"200px"} align="left" ellipsis />
+                <Column title="Adj" dataIndex="adjective" key="adjective" width={"200px"} align="left" ellipsis />
+                <Column title="Adv" dataIndex="adverb" key="adverb" width={"200px"} align="left" ellipsis />
+                <Column title="Conj" dataIndex="conjunction" key="conjunction" width={"50px"} align="left" ellipsis />
+                <Column title="Prep" dataIndex="preposition" key="preposition" width={"50px"} align="left" ellipsis />
                 {/* prettier-ignore */}
                 <Column title="Action" dataIndex="action" key="action" width={"300px"} align="center" 
                      render={(_: any, record: RequestItemData) => (

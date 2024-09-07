@@ -10,7 +10,7 @@ const Logo = () => {
         fontWeight: "900",
         lineHeight: "50px",
     };
-    return <div style={style}>wudahu.com</div>;
+    return <div style={style}>English</div>;
 };
 
 export default Logo;
