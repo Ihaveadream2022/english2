@@ -3,7 +3,7 @@ import store from "../stores";
 import { clearToken } from "../stores/reducers/auth";
 
 const instance = axios.create({
-    baseURL: "http://localhost:8080/",
+    baseURL: process.env.REACT_APP_API_URL,
     timeout: 10000,
 });
 

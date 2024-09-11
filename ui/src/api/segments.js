@@ -10,7 +10,8 @@ const urlSegmentStock = "wms-stock-server/wmsStock"; // 仓库
 const urlDataCenter = "data-center-server/dataCenter";
 const urlAss = "";
 const headerBasic = "platform:a050c7db77eb4b1bb8b2b";
-
+console.log("process", process);
+console.log("process.env", process.env);
 export default {
     host,
     key,

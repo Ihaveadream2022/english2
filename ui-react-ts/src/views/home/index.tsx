@@ -3,6 +3,13 @@ import "./home.scss";
 import imgNight from "../../assets/images/night.png";
 
 function Home() {
+    const lis = Object.keys(process.env).map((v) => {
+        return (
+            <li key={v}>
+                {v}: {process.env[v]}
+            </li>
+        );
+    });
     return (
         <div>
             <Row>
@@ -14,7 +21,9 @@ function Home() {
                 <Col span={12} className="Home-r">
                     <Row>
                         <Col span={24} className="Home-r-t">
-                            <div></div>
+                            <div>
+                                <ul>{lis}</ul>
+                            </div>
                         </Col>
                     </Row>
                     <Row>

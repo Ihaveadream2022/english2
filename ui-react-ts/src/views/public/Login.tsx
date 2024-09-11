@@ -22,7 +22,7 @@ const Login: React.FC = () => {
     const loadCaptcha = useCallback(async () => {
         try {
             const res = await OAuthCaptcha();
-            setCaptcha(`data:image/gif;base64,${res.data.image}`);
+            setCaptcha(`data:image/svg+xml;base64,${res.data.image}`);
             setUUID(res.data.uuid);
         } catch (error) {
             console.log("error", error);
@@ -91,7 +91,7 @@ const Login: React.FC = () => {
                         </Form.Item>
                         <Space.Compact direction="horizontal">
                             <Form.Item name="code" rules={[{ required: true, message: "Please input code!" }]}>
-                                <Input size="large" prefix={<MobileOutlined />} placeholder="Please input captcha" autoComplete="new-password" />
+                                <Input size="large" maxLength={4} prefix={<MobileOutlined />} placeholder="Please input captcha" autoComplete="new-password" />
                             </Form.Item>
                             <img src={captcha} onClick={loadCaptcha} alt="captcha" style={{ height: "40px", width: "130px", cursor: "pointer" }} />
                         </Space.Compact>

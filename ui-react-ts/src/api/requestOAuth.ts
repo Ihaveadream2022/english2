@@ -3,7 +3,7 @@ import { RequestResponse, RequestOAuthLoginParams, RequestOAuthUpdatePasswordDat
 
 // Axios Instance
 const OAuthRequest: AxiosInstance = axios.create({
-    baseURL: "http://localhost:8080/",
+    baseURL: process.env.REACT_APP_API_URL,
     timeout: 10000,
 });
 
@@ -22,14 +22,14 @@ OAuthRequest.interceptors.response.use(
 
 // Login
 const OAuthLogin = (params: RequestOAuthLoginParams): Promise<RequestResponse> => {
-    return OAuthRequest.post("/login", params);
+    return OAuthRequest.post("/open/login", params);
 };
 
 // Logout
 const OAuthLogout = (accessToken: string): Promise<RequestResponse> => {
     return OAuthRequest.request({
         headers: { Authorization: "Bearer " + accessToken },
-        method: "get",
+        method: "post",
         url: "/logout",
     });
 };
@@ -48,7 +48,7 @@ const OAuthUpdatePassword = (accessToken: string, data: RequestOAuthUpdatePasswo
 const OAuthCaptcha = (): Promise<RequestResponse> => {
     return OAuthRequest.request({
         method: "get",
-        url: "/captcha",
+        url: "/open/captcha",
     });
 };
 

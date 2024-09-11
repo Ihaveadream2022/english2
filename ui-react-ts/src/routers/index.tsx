@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter, createHashRouter, Navigate } from "react-router-dom";
 import App from "../views/layout/App";
 import User from "../views/auth/User";
 import Role from "../views/auth/Role";
@@ -49,4 +49,5 @@ const routes = [
     },
 ];
 
-export default createBrowserRouter(routes);
+// export default createBrowserRouter(routes);
+export default createHashRouter(routes);
