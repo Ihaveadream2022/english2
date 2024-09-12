@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import mysql, { DB, ResultSetHeader } from "../lib/DB";
+import { DB, SQL_SNIPPET } from "../lib/DB";
+import mysql, { ResultSetHeader } from "mysql2";
 import { Entity, Count } from "../types/Listening";
 import { ServiceError } from "../exception/CustomError";
 

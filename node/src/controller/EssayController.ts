@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import mysql, { DB, ResultSetHeader } from "../lib/DB";
+import { DB, SQL_SNIPPET } from "../lib/DB";
+import mysql, { ResultSetHeader } from "mysql2";
 import { TypeEntity, TypeCount } from "../types/Essay";
 import { ServiceError } from "../exception/CustomError";
-import { doList, doInsert, doUpdate, doDelete } from "../service/Essay";
+import { doList, doInsert, doUpdate, doDelete, exist } from "../service/Essay";
 
 const SQL_TABLE = "`essay`";
 
@@ -29,6 +30,10 @@ const conInsert = async (req: Request, res: Response, next: NextFunction) => {
         const { title } = req.body;
         if (title === undefined || title.length === 0 || title.length > 255) {
             throw new ServiceError("title length is between 1 and 255");
+        }
+        const [one] = await exist(title);
+        if (one[0]) {
+            throw new ServiceError(`Duplicate entry ${title}`);
         }
         const [result] = await doInsert(req.body);
         res.json({

@@ -1,4 +1,5 @@
-import mysql, { DB } from "../lib/DB";
+import { DB, SQL_SNIPPET } from "../lib/DB";
+import mysql, { ResultSetHeader } from "mysql2";
 import { TypeEntity } from "../types/User";
 
 const SQL_TABLE = "`user`";

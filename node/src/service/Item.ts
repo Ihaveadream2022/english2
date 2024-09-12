@@ -1,203 +1,200 @@
-import mysql, { DB, ResultSetHeader } from "../lib/DB";
+import { DB, SQL_SNIPPET } from "../lib/DB";
+import mysql, { ResultSetHeader } from "mysql2";
 import { TypeEntity, TypeCount, TypeRequest } from "../types/Item";
 
 const SQL_TABLE = "`item`";
-const SQL_TABLE_ITEM_TTS = "`item_tts`";
 
 const doList = async (data: TypeRequest) => {
     const { keyword, orderType, pageSize, pageNo } = data;
-    const offset: number = pageSize * (pageNo - 1);
-    const SQL_SELECT = ["`item`.`id`", "`item`.`name`", "`item`.`common`", "`item`.`pronounce`", "`item`.`noun`", "`item`.`noun_plural`", "`item`.`verb`", "`item`.`verb_past_tense`", "`item`.`verb_past_participle`", "`item`.`verb_third_person_singular`", "`item`.`verb_present_participle`", "`item`.`adjective`", "`item`.`adverb`", "`item`.`conjunction`", "`item`.`preposition`", "`item`.`comment`", "`item_tts`.`id` AS `it_id`", "`item_tts`.`name` AS `it_name`", "`item_tts`.`audio` AS `it_audio`", "`item_tts`.`audio_cn` AS `it_audio_cn`", "`item_tts`.`audio_source` AS `it_audio_source`"];
-    const SQL_WHERE = ["(1=1)"];
-    const SQL_ORDER_BY = orderType === "ASC" ? "`item`.`id` ASC" : "`item`.`id` DESC";
-    const SQL_LEFT_JOIN = `${SQL_TABLE_ITEM_TTS} ON \`item_tts\`.\`name\`=\`item\`.\`name\``;
-    const SQL_List_Params: any[] = [];
+    const SQLSnippet: SQL_SNIPPET = {
+        TABLE: "`item`",
+        SELECT: ["`item`.`id`", "`item`.`name`", "`item`.`common`", "`item`.`pronounce`", "`item`.`noun`", "`item`.`noun_plural`", "`item`.`verb`", "`item`.`verb_past_tense`", "`item`.`verb_past_participle`", "`item`.`verb_third_person_singular`", "`item`.`verb_present_participle`", "`item`.`adjective`", "`item`.`adverb`", "`item`.`conjunction`", "`item`.`preposition`", "`item`.`comment`", "`item_tts`.`id` AS `it_id`", "`item_tts`.`name` AS `it_name`", "`item_tts`.`audio` AS `it_audio`", "`item_tts`.`audio_cn` AS `it_audio_cn`", "`item_tts`.`audio_source` AS `it_audio_source`"],
+        WHERE: ["(1=1)"],
+        ORDER_BY: orderType === "ASC" ? "`item`.`id` ASC" : "`item`.`id` DESC",
+        LEFT_JOIN: ["`item_tts` ON `item_tts`.`name` = `item`.`name`"],
+        BIND_PARAMS: [],
+    };
     if (keyword) {
-        SQL_WHERE.push(` AND (\`item\`.\`name\` LIKE concat('%',?,'%') 
-            OR \`item\`.\`common\` LIKE concat('%',?,'%') 
-            OR \`item\`.\`noun\` LIKE concat('%',?,'%')
-            OR \`item\`.\`verb\` LIKE concat('%',?,'%')
-            OR \`item\`.\`adjective\` LIKE concat('%',?,'%')
-            OR \`item\`.\`adverb\` LIKE concat('%',?,'%')
-            OR \`item\`.\`preposition\` LIKE concat('%',?,'%')
-            OR \`item\`.\`conjunction\` LIKE concat('%',?,'%')
-            OR \`item\`.\`comment\` LIKE concat('%',?,'%'))`);
-        SQL_List_Params.push(keyword, keyword, keyword, keyword, keyword, keyword, keyword, keyword, keyword);
+        const SQLLike = ` AND (\`item\`.\`name\` ?
+            OR \`item\`.\`common\` ?
+            OR \`item\`.\`noun\` ?
+            OR \`item\`.\`verb\` ?
+            OR \`item\`.\`adjective\` ?
+            OR \`item\`.\`adverb\` ?
+            OR \`item\`.\`preposition\` ?
+            OR \`item\`.\`conjunction\` ?
+            OR \`item\`.\`comment\` ?)`;
+        const SQLLikeRep = SQLLike.replace(/\?(\n\s+)?/g, "LIKE concat('%',?,'%') ");
+        SQLSnippet.WHERE?.push(SQLLikeRep);
+        SQLSnippet.BIND_PARAMS?.push(keyword, keyword, keyword, keyword, keyword, keyword, keyword, keyword, keyword);
     }
-    const SQL_Count = `SELECT count(${SQL_SELECT[0]}) as count FROM ${SQL_TABLE} LEFT JOIN ${SQL_LEFT_JOIN} WHERE ${SQL_WHERE.join("")} LIMIT 1`;
-    const [total] = await DB.query<TypeCount[]>(SQL_Count, SQL_List_Params);
-    console.log(mysql.format(SQL_Count, SQL_List_Params));
+    const SQL_Count = `SELECT COUNT(\`id\`) AS \`count\` FROM ${SQLSnippet.TABLE} WHERE ${SQLSnippet.WHERE?.join("")} LIMIT 1`;
+    const [total] = await DB.query<TypeCount[]>(SQL_Count, SQLSnippet.BIND_PARAMS);
+    console.log(mysql.format(SQL_Count, SQLSnippet.BIND_PARAMS));
 
-    SQL_List_Params.push(offset, pageSize);
-    const SQL_List = `SELECT ${SQL_SELECT.join(",")} FROM ${SQL_TABLE} LEFT JOIN ${SQL_LEFT_JOIN} WHERE ${SQL_WHERE.join("")} ORDER BY ${SQL_ORDER_BY} LIMIT ?,?`;
-    console.log(mysql.format(SQL_List, SQL_List_Params));const [list] = await DB.query<TypeEntity[]>(SQL_List, SQL_List_Params);
-    console.log(mysql.format(SQL_List, SQL_List_Params));
+    SQLSnippet.BIND_PARAMS?.push(pageSize * (pageNo - 1), pageSize);
+    const SQL_List = `SELECT ${SQLSnippet.SELECT?.join(",")} FROM ${SQL_TABLE} LEFT JOIN ${SQLSnippet.LEFT_JOIN?.[0]} WHERE ${SQLSnippet.WHERE?.join("")} ORDER BY ${SQLSnippet.ORDER_BY} LIMIT ?,?`;
+    const [list] = await DB.query<TypeEntity[]>(SQL_List, SQLSnippet.BIND_PARAMS);
+    console.log(mysql.format(SQL_List, SQLSnippet.BIND_PARAMS));
 
     return { total: total[0].count, pageSize, pageNo, list };
 };
 
 const doInsert = async (data: any) => {
     const { name, common, pronounce, noun, nounPlural, verb, verbPastTense, verbPastParticiple, verbThirdPersonSingular, verbPresentParticiple, adjective, adverb, conjunction, preposition, comment } = data;
-    const SQL_COLUMNS = ["`name`"];
-    const SQL_VALUES = ["?"];
-    const SQL_Params = [name];
+    const SQLSnippet: SQL_SNIPPET = { TABLE: "`item`", COLUMNS: ["`name`"], VALUES: ["?"], BIND_PARAMS: [name] };
     if (common) {
-        SQL_COLUMNS.push("`common`");
-        SQL_VALUES.push("?");
-        SQL_Params.push(common);
+        SQLSnippet.COLUMNS?.push("`common`");
+        SQLSnippet.VALUES?.push("?");
+        SQLSnippet.BIND_PARAMS?.push(common);
     }
     if (pronounce) {
-        SQL_COLUMNS.push("`pronounce`");
-        SQL_VALUES.push("?");
-        SQL_Params.push(pronounce);
+        SQLSnippet.COLUMNS?.push("`pronounce`");
+        SQLSnippet.VALUES?.push("?");
+        SQLSnippet.BIND_PARAMS?.push(pronounce);
     }
     if (noun) {
-        SQL_COLUMNS.push("`noun`");
-        SQL_VALUES.push("?");
-        SQL_Params.push(noun);
+        SQLSnippet.COLUMNS?.push("`noun`");
+        SQLSnippet.VALUES?.push("?");
+        SQLSnippet.BIND_PARAMS?.push(noun);
     }
     if (nounPlural) {
-        SQL_COLUMNS.push("`noun_plural`");
-        SQL_VALUES.push("?");
-        SQL_Params.push(nounPlural);
+        SQLSnippet.COLUMNS?.push("`noun_plural`");
+        SQLSnippet.VALUES?.push("?");
+        SQLSnippet.BIND_PARAMS?.push(nounPlural);
     }
     if (verb) {
-        SQL_COLUMNS.push("`verb`");
-        SQL_VALUES.push("?");
-        SQL_Params.push(verb);
+        SQLSnippet.COLUMNS?.push("`verb`");
+        SQLSnippet.VALUES?.push("?");
+        SQLSnippet.BIND_PARAMS?.push(verb);
     }
     if (verbPastTense) {
-        SQL_COLUMNS.push("`verb_past_tense`");
-        SQL_VALUES.push("?");
-        SQL_Params.push(verbPastTense);
+        SQLSnippet.COLUMNS?.push("`verb_past_tense`");
+        SQLSnippet.VALUES?.push("?");
+        SQLSnippet.BIND_PARAMS?.push(verbPastTense);
     }
     if (verbPastParticiple) {
-        SQL_COLUMNS.push("`verb_past_participle`");
-        SQL_VALUES.push("?");
-        SQL_Params.push(verbPastParticiple);
+        SQLSnippet.COLUMNS?.push("`verb_past_participle`");
+        SQLSnippet.VALUES?.push("?");
+        SQLSnippet.BIND_PARAMS?.push(verbPastParticiple);
     }
     if (verbThirdPersonSingular) {
-        SQL_COLUMNS.push("`verb_third_person_singular`");
-        SQL_VALUES.push("?");
-        SQL_Params.push(verbThirdPersonSingular);
+        SQLSnippet.COLUMNS?.push("`verb_third_person_singular`");
+        SQLSnippet.VALUES?.push("?");
+        SQLSnippet.BIND_PARAMS?.push(verbThirdPersonSingular);
     }
     if (verbPresentParticiple) {
-        SQL_COLUMNS.push("`verb_present_participle`");
-        SQL_VALUES.push("?");
-        SQL_Params.push(verbPresentParticiple);
+        SQLSnippet.COLUMNS?.push("`verb_present_participle`");
+        SQLSnippet.VALUES?.push("?");
+        SQLSnippet.BIND_PARAMS?.push(verbPresentParticiple);
     }
     if (adjective) {
-        SQL_COLUMNS.push("`adjective`");
-        SQL_VALUES.push("?");
-        SQL_Params.push(adjective);
+        SQLSnippet.COLUMNS?.push("`adjective`");
+        SQLSnippet.VALUES?.push("?");
+        SQLSnippet.BIND_PARAMS?.push(adjective);
     }
     if (adverb) {
-        SQL_COLUMNS.push("`adverb`");
-        SQL_VALUES.push("?");
-        SQL_Params.push(adverb);
+        SQLSnippet.COLUMNS?.push("`adverb`");
+        SQLSnippet.VALUES?.push("?");
+        SQLSnippet.BIND_PARAMS?.push(adverb);
     }
     if (conjunction) {
-        SQL_COLUMNS.push("`conjunction`");
-        SQL_VALUES.push("?");
-        SQL_Params.push(conjunction);
+        SQLSnippet.COLUMNS?.push("`conjunction`");
+        SQLSnippet.VALUES?.push("?");
+        SQLSnippet.BIND_PARAMS?.push(conjunction);
     }
     if (preposition) {
-        SQL_COLUMNS.push("`preposition`");
-        SQL_VALUES.push("?");
-        SQL_Params.push(preposition);
+        SQLSnippet.COLUMNS?.push("`preposition`");
+        SQLSnippet.VALUES?.push("?");
+        SQLSnippet.BIND_PARAMS?.push(preposition);
     }
     if (comment) {
-        SQL_COLUMNS.push("`comment`");
-        SQL_VALUES.push("?");
-        SQL_Params.push(comment);
+        SQLSnippet.COLUMNS?.push("`comment`");
+        SQLSnippet.VALUES?.push("?");
+        SQLSnippet.BIND_PARAMS?.push(comment);
     }
-    const SQL = `INSERT INTO ${SQL_TABLE} (${SQL_COLUMNS.join(",")}) VALUES (${SQL_VALUES.join(",")})`;
-    console.log(mysql.format(SQL, SQL_Params));
-    return await DB.execute<ResultSetHeader>(SQL, SQL_Params);
+    const SQL = `INSERT INTO ${SQLSnippet.TABLE} (${SQLSnippet.COLUMNS?.join(",")}) VALUES (${SQLSnippet.VALUES?.join(",")})`;
+    console.log(mysql.format(SQL, SQLSnippet.BIND_PARAMS));
+    return await DB.execute<ResultSetHeader>(SQL, SQLSnippet.BIND_PARAMS);
 };
 
 const doUpdate = async (data: any, ID: number) => {
     const { name, common, pronounce, noun, nounPlural, verb, verbPastTense, verbPastParticiple, verbThirdPersonSingular, verbPresentParticiple, adjective, adverb, conjunction, preposition, comment } = data;
-    const SQL_WHERE = ["`id`=?"];
-    const SQL_SET = ["`name`=?"];
-    const SQL_Params = [name];
+    const SQLSnippet: SQL_SNIPPET = { TABLE: "`item`", WHERE: ["`id`=?"], SET: ["`name`=?"], BIND_PARAMS: [name] };
     if (common) {
-        SQL_SET.push("`common`=?");
-        SQL_Params.push(common);
+        SQLSnippet.SET?.push("`common`=?");
+        SQLSnippet.BIND_PARAMS?.push(common);
     }
     if (pronounce) {
-        SQL_SET.push("`pronounce`=?");
-        SQL_Params.push(pronounce);
+        SQLSnippet.SET?.push("`pronounce`=?");
+        SQLSnippet.BIND_PARAMS?.push(pronounce);
     }
     if (noun) {
-        SQL_SET.push("`noun`=?");
-        SQL_Params.push(noun);
+        SQLSnippet.SET?.push("`noun`=?");
+        SQLSnippet.BIND_PARAMS?.push(noun);
     }
     if (nounPlural) {
-        SQL_SET.push("`noun_plural`=?");
-        SQL_Params.push(nounPlural);
+        SQLSnippet.SET?.push("`noun_plural`=?");
+        SQLSnippet.BIND_PARAMS?.push(nounPlural);
     }
     if (verb) {
-        SQL_SET.push("`verb`=?");
-        SQL_Params.push(verb);
+        SQLSnippet.SET?.push("`verb`=?");
+        SQLSnippet.BIND_PARAMS?.push(verb);
     }
     if (verbPastTense) {
-        SQL_SET.push("`verb_past_tense`=?");
-        SQL_Params.push(verbPastTense);
+        SQLSnippet.SET?.push("`verb_past_tense`=?");
+        SQLSnippet.BIND_PARAMS?.push(verbPastTense);
     }
     if (verbPastParticiple) {
-        SQL_SET.push("`verb_past_participle`=?");
-        SQL_Params.push(verbPastParticiple);
+        SQLSnippet.SET?.push("`verb_past_participle`=?");
+        SQLSnippet.BIND_PARAMS?.push(verbPastParticiple);
     }
     if (verbThirdPersonSingular) {
-        SQL_SET.push("`verb_third_person_singular`=?");
-        SQL_Params.push(verbThirdPersonSingular);
+        SQLSnippet.SET?.push("`verb_third_person_singular`=?");
+        SQLSnippet.BIND_PARAMS?.push(verbThirdPersonSingular);
     }
     if (verbPresentParticiple) {
-        SQL_SET.push("`verb_present_participle`=?");
-        SQL_Params.push(verbPresentParticiple);
+        SQLSnippet.SET?.push("`verb_present_participle`=?");
+        SQLSnippet.BIND_PARAMS?.push(verbPresentParticiple);
     }
     if (adjective) {
-        SQL_SET.push("`adjective`=?");
-        SQL_Params.push(adjective);
+        SQLSnippet.SET?.push("`adjective`=?");
+        SQLSnippet.BIND_PARAMS?.push(adjective);
     }
     if (adverb) {
-        SQL_SET.push("`adverb`=?");
-        SQL_Params.push(adverb);
+        SQLSnippet.SET?.push("`adverb`=?");
+        SQLSnippet.BIND_PARAMS?.push(adverb);
     }
     if (conjunction) {
-        SQL_SET.push("`conjunction`=?");
-        SQL_Params.push(conjunction);
+        SQLSnippet.SET?.push("`conjunction`=?");
+        SQLSnippet.BIND_PARAMS?.push(conjunction);
     }
     if (preposition) {
-        SQL_SET.push("`preposition`=?");
-        SQL_Params.push(preposition);
+        SQLSnippet.SET?.push("`preposition`=?");
+        SQLSnippet.BIND_PARAMS?.push(preposition);
     }
     if (comment) {
-        SQL_SET.push("`comment`=?");
-        SQL_Params.push(comment);
+        SQLSnippet.SET?.push("`comment`=?");
+        SQLSnippet.BIND_PARAMS?.push(comment);
     }
-    SQL_Params.push(ID);
-    const SQL = `UPDATE ${SQL_TABLE} SET ${SQL_SET.join(",")} WHERE ${SQL_WHERE.join("")}`;
-    console.log(mysql.format(SQL, SQL_Params));
-    return await DB.execute<ResultSetHeader>(SQL, SQL_Params);
+    SQLSnippet.BIND_PARAMS?.push(ID);
+    const SQL = `UPDATE ${SQL_TABLE} SET ${SQLSnippet.SET?.join(",")} WHERE ${SQLSnippet.WHERE?.join("")}`;
+    console.log(mysql.format(SQL, SQLSnippet.BIND_PARAMS));
+    return await DB.execute<ResultSetHeader>(SQL, SQLSnippet.BIND_PARAMS);
 };
 
 const doDelete = async (ID: number) => {
-    const SQL_WHERE = ["`id`=?"];
-    const SQL = `DELETE FROM ${SQL_TABLE} WHERE ${SQL_WHERE.join("")}`;
-    const SQL_Params = [ID];
-    console.log(mysql.format(SQL, SQL_Params));
-    return await DB.execute<ResultSetHeader>(SQL, SQL_Params);
+    const SQLSnippet: SQL_SNIPPET = { TABLE: "`item`", WHERE: ["`id`=?"], BIND_PARAMS: [ID] };
+    const SQL = `DELETE FROM ${SQLSnippet.TABLE} WHERE ${SQLSnippet.WHERE?.join("")}`;
+    console.log(mysql.format(SQL, SQLSnippet.BIND_PARAMS));
+    return await DB.execute<ResultSetHeader>(SQL, SQLSnippet.BIND_PARAMS);
 };
 
 const exist = async (name: string) => {
     try {
-        const SQL_Params = [name];
-        const SQL_SELECT = ["`id`", "`name`"];
-        const SQL_WHERE = ["`name`=?"];
-        const SQL = `SELECT ${SQL_SELECT.join(",")} FROM ${SQL_TABLE} WHERE ${SQL_WHERE.join("")}`;
-        return await DB.execute<TypeEntity[]>(SQL, SQL_Params);
+        const SQLSnippet: SQL_SNIPPET = { TABLE: "`essay`", SELECT: ["`id`", "`name`"], WHERE: ["`name`=?"], BIND_PARAMS: [name] };
+        const SQL = `SELECT ${SQLSnippet.SELECT?.join(",")} FROM ${SQL_TABLE} WHERE ${SQLSnippet.WHERE?.join("")}`;
+        return await DB.execute<TypeEntity[]>(SQL, SQLSnippet.BIND_PARAMS);
     } catch (err) {
         throw new Error((err as Error).message);
     }

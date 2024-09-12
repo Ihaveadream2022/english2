@@ -1,5 +1,6 @@
 import { exec } from "child_process";
-import mysql, { DB, ResultSetHeader } from "../lib/DB";
+import { DB, SQL_SNIPPET } from "../lib/DB";
+import mysql, { ResultSetHeader } from "mysql2";
 import { promises } from "fs";
 import util from "util";
 

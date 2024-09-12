@@ -41,7 +41,6 @@ const checkAuthorized = (req: Request, res: Response, next: NextFunction) => {
         }
         next();
     } catch (err) {
-        console.error(err);
         next();
     }
 };

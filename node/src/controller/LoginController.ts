@@ -35,7 +35,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     }
 };
 
-export const captcha = async (req: Request, res: Response) => {
+export const captcha = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const captcha = svgCaptcha.create({
             noise: 8, // 噪点线条
@@ -44,13 +44,13 @@ export const captcha = async (req: Request, res: Response) => {
         });
         const uuid = generateUUID();
         const base64Image = Buffer.from(captcha.data).toString("base64");
-        await redis.setEx(`captcha-${uuid}`, 300, captcha.text.toLowerCase());
+        await redis.set(`captcha-${uuid}`, captcha.text.toLowerCase(), 300);
         res.json({
             code: 1,
             message: "Success",
             data: { uuid: `captcha-${uuid}`, image: base64Image },
         });
     } catch (err) {
-        throw err;
+        next(err);
     }
 };
