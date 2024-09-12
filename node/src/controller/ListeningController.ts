@@ -8,7 +8,7 @@ const SQL_TABLE = "`listening`";
 
 export const doList = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const keyword: string = req.query.keyword as string;
+        const keyword: string = req.query.keyword?.toString() || "";
         const pageSize: number = parseInt(req.query.pageSize as string) || 10;
         const pageNo: number = parseInt(req.query.pageNo as string) || 1;
         const offset: number = pageSize * (pageNo - 1);

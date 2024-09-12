@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { ServiceError } from "../exception/CustomError";
-import { doList, doInsert, doUpdate, doDelete, findByTitle } from "../service/Essay";
+import { doList, doInsert, doUpdate, doDelete, exist } from "../service/Grammar";
 
 const conList = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -21,13 +21,13 @@ const conList = async (req: Request, res: Response, next: NextFunction) => {
 
 const conInsert = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { title } = req.body;
-        if (title === undefined || title.length === 0 || title.length > 255) {
-            throw new ServiceError("title length is between 1 and 255");
+        const { name } = req.body;
+        if (name === undefined || name.length === 0 || name.length > 255) {
+            throw new ServiceError("name length is between 1 and 255");
         }
-        const [one] = await findByTitle(title);
+        const [one] = await exist(name);
         if (one[0]) {
-            throw new ServiceError(`Duplicate entry ${title}`);
+            throw new ServiceError(`Duplicate entry ${name}`);
         }
         const [result] = await doInsert(req.body);
         res.json({
@@ -42,16 +42,12 @@ const conInsert = async (req: Request, res: Response, next: NextFunction) => {
 const conUpdate = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const ID: number = parseInt(req.params.id as string);
-        const { title } = req.body;
+        const { name } = req.body;
         if (!ID) {
             throw new ServiceError("ID is required");
         }
-        if (title === undefined || title.length === 0 || title.length > 255) {
-            throw new ServiceError("title length is between 1 and 255");
-        }
-        const [one] = await findByTitle(title);
-        if (one[0] && one[0].id != ID) {
-            throw new ServiceError(`Duplicate entry ${title}`);
+        if (name === undefined || name.length === 0 || name.length > 255) {
+            throw new ServiceError("name length is between 1 and 255");
         }
         const [result] = await doUpdate(req.body, ID);
         res.json({

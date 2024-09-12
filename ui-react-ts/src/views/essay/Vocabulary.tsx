@@ -2,7 +2,7 @@ import React, { useEffect, useContext } from "react";
 import { useState, useRef } from "react";
 import { Table, Button, Input, Space, Popconfirm } from "antd";
 import type { GetProps, InputRef } from "antd";
-import { itemList, ttsGet } from "../../api/request";
+import { itemList, ttsGen } from "../../api/request";
 import { SearchOutlined, ClearOutlined, QuestionCircleOutlined, DeleteOutlined } from "@ant-design/icons";
 import { RequestItemParams, RequestItemData, VocabularyData } from "../../types";
 import { ContextVocabulary } from "../components/context";
@@ -54,11 +54,11 @@ const Vocabulary: React.FC<props> = ({ content, onChange }) => {
     };
     const onPlay = async (row: VocabularyData) => {
         try {
-            const res = await ttsGet({ name: row.key });
+            const res = await ttsGen({ name: row.key });
             if (res.code) {
                 if (refAudio.current) {
                     const audio = refAudio.current;
-                    audio.src = "data:audio/wav;base64," + res.data.audio;
+                    audio.src = "data:audio/wav;base64," + res.data;
                     audio.load();
                     audio.play();
                 }
@@ -81,17 +81,17 @@ const Vocabulary: React.FC<props> = ({ content, onChange }) => {
         }
     };
     const getName = (name: string, row: RequestItemData) => {
-        if (row.verbPastTense && row.name + "d" !== row.verbPastTense && row.name + "ed" !== row.verbPastTense && row.name.slice(0, -1) + "ied" !== row.verbPastTense) {
-            name += ` / ${row.verbPastTense}`;
+        if (row.verb_past_tense && row.name + "d" !== row.verb_past_tense && row.name + "ed" !== row.verb_past_tense && row.name.slice(0, -1) + "ied" !== row.verb_past_tense) {
+            name += ` / ${row.verb_past_tense}`;
         }
-        if (row.verbPastParticiple && row.name + "d" !== row.verbPastParticiple && row.name + "ed" !== row.verbPastParticiple && row.name.slice(0, -1) + "ied" !== row.verbPastParticiple) {
-            name += ` / ${row.verbPastParticiple}`;
+        if (row.verb_past_participle && row.name + "d" !== row.verb_past_participle && row.name + "ed" !== row.verb_past_participle && row.name.slice(0, -1) + "ied" !== row.verb_past_participle) {
+            name += ` / ${row.verb_past_participle}`;
         }
-        if (row.verbPresentParticiple && row.name + "ing" !== row.verbPresentParticiple && row.name.slice(0, -1) + "ing" !== row.verbPresentParticiple) {
-            name += ` / ${row.verbPresentParticiple}`;
+        if (row.verb_present_participle && row.name + "ing" !== row.verb_present_participle && row.name.slice(0, -1) + "ing" !== row.verb_present_participle) {
+            name += ` / ${row.verb_present_participle}`;
         }
-        if (row.nounPlural && row.name + "s" !== row.nounPlural && row.name + "es" !== row.nounPlural && row.name.slice(0, -1) + "ies" !== row.nounPlural) {
-            name += ` / ${row.nounPlural}`;
+        if (row.noun_plural && row.name + "s" !== row.noun_plural && row.name + "es" !== row.noun_plural && row.name.slice(0, -1) + "ies" !== row.noun_plural) {
+            name += ` / ${row.noun_plural}`;
         }
         return name;
     };

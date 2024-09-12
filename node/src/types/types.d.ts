@@ -3,6 +3,7 @@ declare namespace Express {
         user?: {
             id: number;
             username: string;
+            password_hashed: string;
         };
     }
 }

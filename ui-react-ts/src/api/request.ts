@@ -1,18 +1,39 @@
 import requestBase from "./requestBase";
-import { RequestResponse, RequestItemParams, RequestItemData, RequestItemDataDelete, RequestTtsData, RequestEssayParams, RequestEssayData, RequestEssayDataDelete, RequestGrammarParams, RequestGrammarData, RequestGrammarDataDelete } from "../types";
+import { RequestResponse, RequestItemParams, RequestItemData, RequestItemDataDelete, RequestTtsData, RequestEssayParams, RequestEssayData, RequestEssayDataDelete, RequestGrammarParams, RequestGrammarData, RequestGrammarDataDelete, RequestOAuthUpdatePasswordData } from "../types";
 
-export const itemList = (params: RequestItemParams): Promise<RequestResponse> =>
-    requestBase.request({
+// User
+export const OAuthLogout = (): Promise<RequestResponse> => {
+    return requestBase.request({
+        method: "post",
+        url: "/logout",
+    });
+};
+
+export const OAuthUpdatePassword = (data: RequestOAuthUpdatePasswordData): Promise<RequestResponse> => {
+    return requestBase.request({
+        method: "put",
+        url: "/users/updatePass",
+        data: data,
+    });
+};
+// User
+
+// Item
+export const itemList = (params: RequestItemParams): Promise<RequestResponse> => {
+    return requestBase.request({
         method: "get",
         url: "/items",
         params: params,
     });
-export const itemAdd = (data: RequestItemData): Promise<RequestResponse> =>
-    requestBase.request({
+};
+
+export const itemAdd = (data: RequestItemData): Promise<RequestResponse> => {
+    return requestBase.request({
         method: "post",
         url: "/items",
         data: data,
     });
+};
 
 export const itemEdit = (data: RequestItemData): Promise<RequestResponse> => {
     return requestBase.request({
@@ -21,34 +42,49 @@ export const itemEdit = (data: RequestItemData): Promise<RequestResponse> => {
         data: data,
     });
 };
-export const itemDelete = (data: RequestItemDataDelete): Promise<RequestResponse> =>
-    requestBase.request({
+
+export const itemDelete = (data: RequestItemDataDelete): Promise<RequestResponse> => {
+    return requestBase.request({
         method: "delete",
         url: "/items/" + data.id,
     });
+};
+// Item
 
 // TTS
-export const ttsGet = (params: RequestTtsData): Promise<RequestResponse> =>
-    requestBase.request({
+export const ttsGet = (params: RequestTtsData): Promise<RequestResponse> => {
+    return requestBase.request({
         method: "get",
-        url: "/tts/get64",
+        url: "/itemTts",
         params: params,
     });
+};
+export const ttsGen = (params: RequestTtsData): Promise<RequestResponse> => {
+    return requestBase.request({
+        method: "get",
+        url: "/itemTts/gen",
+        params: params,
+    });
+};
 // TTS
 
 // Essay
-export const essayList = (params: RequestEssayParams): Promise<RequestResponse> =>
-    requestBase.request({
+export const essayList = (params: RequestEssayParams): Promise<RequestResponse> => {
+    return requestBase.request({
         method: "get",
         url: "/essays",
         params: params,
     });
-export const essayAdd = (data: RequestEssayData): Promise<RequestResponse> =>
-    requestBase.request({
+};
+
+export const essayAdd = (data: RequestEssayData): Promise<RequestResponse> => {
+    return requestBase.request({
         method: "post",
         url: "/essays",
         data: data,
     });
+};
+
 export const essayEdit = (data: RequestEssayData): Promise<RequestResponse> => {
     return requestBase.request({
         method: "put",
@@ -56,26 +92,32 @@ export const essayEdit = (data: RequestEssayData): Promise<RequestResponse> => {
         data: data,
     });
 };
-export const essayDelete = (data: RequestEssayDataDelete): Promise<RequestResponse> =>
-    requestBase.request({
+
+export const essayDelete = (data: RequestEssayDataDelete): Promise<RequestResponse> => {
+    return requestBase.request({
         method: "delete",
         url: "/essays/" + data.id,
     });
+};
 // Essay
 
 // Grammars
-export const grammarList = (params: RequestGrammarParams): Promise<RequestResponse> =>
-    requestBase.request({
+export const grammarList = (params: RequestGrammarParams): Promise<RequestResponse> => {
+    return requestBase.request({
         method: "get",
         url: "/grammars",
         params: params,
     });
-export const grammarAdd = (data: RequestGrammarData): Promise<RequestResponse> =>
-    requestBase.request({
+};
+
+export const grammarAdd = (data: RequestGrammarData): Promise<RequestResponse> => {
+    return requestBase.request({
         method: "post",
         url: "/grammars",
         data: data,
     });
+};
+
 export const grammarEdit = (data: RequestGrammarData): Promise<RequestResponse> => {
     return requestBase.request({
         method: "put",
@@ -83,9 +125,11 @@ export const grammarEdit = (data: RequestGrammarData): Promise<RequestResponse> 
         data: data,
     });
 };
-export const grammarDelete = (data: RequestGrammarDataDelete): Promise<RequestResponse> =>
-    requestBase.request({
+
+export const grammarDelete = (data: RequestGrammarDataDelete): Promise<RequestResponse> => {
+    return requestBase.request({
         method: "delete",
         url: "/grammars/" + data.id,
     });
+};
 // Grammars

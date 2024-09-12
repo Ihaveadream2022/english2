@@ -41,7 +41,7 @@ const doList = async (data: TypeRequest) => {
 };
 
 const doInsert = async (data: any) => {
-    const { name, common, pronounce, noun, nounPlural, verb, verbPastTense, verbPastParticiple, verbThirdPersonSingular, verbPresentParticiple, adjective, adverb, conjunction, preposition, comment } = data;
+    const { name, common, pronounce, noun, noun_plural, verb, verb_past_tense, verb_past_participle, verb_third_person_singular, verb_present_participle, adjective, adverb, conjunction, preposition, comment } = data;
     const SQLSnippet: SQL_SNIPPET = { TABLE: "`item`", COLUMNS: ["`name`"], VALUES: ["?"], BIND_PARAMS: [name] };
     if (common) {
         SQLSnippet.COLUMNS?.push("`common`");
@@ -58,35 +58,35 @@ const doInsert = async (data: any) => {
         SQLSnippet.VALUES?.push("?");
         SQLSnippet.BIND_PARAMS?.push(noun);
     }
-    if (nounPlural) {
+    if (noun_plural) {
         SQLSnippet.COLUMNS?.push("`noun_plural`");
         SQLSnippet.VALUES?.push("?");
-        SQLSnippet.BIND_PARAMS?.push(nounPlural);
+        SQLSnippet.BIND_PARAMS?.push(noun_plural);
     }
     if (verb) {
         SQLSnippet.COLUMNS?.push("`verb`");
         SQLSnippet.VALUES?.push("?");
         SQLSnippet.BIND_PARAMS?.push(verb);
     }
-    if (verbPastTense) {
+    if (verb_past_tense) {
         SQLSnippet.COLUMNS?.push("`verb_past_tense`");
         SQLSnippet.VALUES?.push("?");
-        SQLSnippet.BIND_PARAMS?.push(verbPastTense);
+        SQLSnippet.BIND_PARAMS?.push(verb_past_tense);
     }
-    if (verbPastParticiple) {
+    if (verb_past_participle) {
         SQLSnippet.COLUMNS?.push("`verb_past_participle`");
         SQLSnippet.VALUES?.push("?");
-        SQLSnippet.BIND_PARAMS?.push(verbPastParticiple);
+        SQLSnippet.BIND_PARAMS?.push(verb_past_participle);
     }
-    if (verbThirdPersonSingular) {
+    if (verb_third_person_singular) {
         SQLSnippet.COLUMNS?.push("`verb_third_person_singular`");
         SQLSnippet.VALUES?.push("?");
-        SQLSnippet.BIND_PARAMS?.push(verbThirdPersonSingular);
+        SQLSnippet.BIND_PARAMS?.push(verb_third_person_singular);
     }
-    if (verbPresentParticiple) {
+    if (verb_present_participle) {
         SQLSnippet.COLUMNS?.push("`verb_present_participle`");
         SQLSnippet.VALUES?.push("?");
-        SQLSnippet.BIND_PARAMS?.push(verbPresentParticiple);
+        SQLSnippet.BIND_PARAMS?.push(verb_present_participle);
     }
     if (adjective) {
         SQLSnippet.COLUMNS?.push("`adjective`");
@@ -119,7 +119,7 @@ const doInsert = async (data: any) => {
 };
 
 const doUpdate = async (data: any, ID: number) => {
-    const { name, common, pronounce, noun, nounPlural, verb, verbPastTense, verbPastParticiple, verbThirdPersonSingular, verbPresentParticiple, adjective, adverb, conjunction, preposition, comment } = data;
+    const { name, common, pronounce, noun, noun_plural, verb, verb_past_tense, verb_past_participle, verb_third_person_singular, verb_present_participle, adjective, adverb, conjunction, preposition, comment } = data;
     const SQLSnippet: SQL_SNIPPET = { TABLE: "`item`", WHERE: ["`id`=?"], SET: ["`name`=?"], BIND_PARAMS: [name] };
     if (common) {
         SQLSnippet.SET?.push("`common`=?");
@@ -133,29 +133,29 @@ const doUpdate = async (data: any, ID: number) => {
         SQLSnippet.SET?.push("`noun`=?");
         SQLSnippet.BIND_PARAMS?.push(noun);
     }
-    if (nounPlural) {
+    if (noun_plural) {
         SQLSnippet.SET?.push("`noun_plural`=?");
-        SQLSnippet.BIND_PARAMS?.push(nounPlural);
+        SQLSnippet.BIND_PARAMS?.push(noun_plural);
     }
     if (verb) {
         SQLSnippet.SET?.push("`verb`=?");
         SQLSnippet.BIND_PARAMS?.push(verb);
     }
-    if (verbPastTense) {
+    if (verb_past_tense) {
         SQLSnippet.SET?.push("`verb_past_tense`=?");
-        SQLSnippet.BIND_PARAMS?.push(verbPastTense);
+        SQLSnippet.BIND_PARAMS?.push(verb_past_tense);
     }
-    if (verbPastParticiple) {
+    if (verb_past_participle) {
         SQLSnippet.SET?.push("`verb_past_participle`=?");
-        SQLSnippet.BIND_PARAMS?.push(verbPastParticiple);
+        SQLSnippet.BIND_PARAMS?.push(verb_past_participle);
     }
-    if (verbThirdPersonSingular) {
+    if (verb_third_person_singular) {
         SQLSnippet.SET?.push("`verb_third_person_singular`=?");
-        SQLSnippet.BIND_PARAMS?.push(verbThirdPersonSingular);
+        SQLSnippet.BIND_PARAMS?.push(verb_third_person_singular);
     }
-    if (verbPresentParticiple) {
+    if (verb_present_participle) {
         SQLSnippet.SET?.push("`verb_present_participle`=?");
-        SQLSnippet.BIND_PARAMS?.push(verbPresentParticiple);
+        SQLSnippet.BIND_PARAMS?.push(verb_present_participle);
     }
     if (adjective) {
         SQLSnippet.SET?.push("`adjective`=?");
@@ -190,14 +190,11 @@ const doDelete = async (ID: number) => {
     return await DB.execute<ResultSetHeader>(SQL, SQLSnippet.BIND_PARAMS);
 };
 
-const exist = async (name: string) => {
-    try {
-        const SQLSnippet: SQL_SNIPPET = { TABLE: "`essay`", SELECT: ["`id`", "`name`"], WHERE: ["`name`=?"], BIND_PARAMS: [name] };
-        const SQL = `SELECT ${SQLSnippet.SELECT?.join(",")} FROM ${SQL_TABLE} WHERE ${SQLSnippet.WHERE?.join("")}`;
-        return await DB.execute<TypeEntity[]>(SQL, SQLSnippet.BIND_PARAMS);
-    } catch (err) {
-        throw new Error((err as Error).message);
-    }
+const findByName = async (name: string) => {
+    const SQLSnippet: SQL_SNIPPET = { TABLE: "`item`", SELECT: ["`id`", "`name`", "`common`", "`pronounce`", "`noun`", "`noun_plural`", "`verb`", "`verb_past_tense`", "`verb_past_participle`", "`verb_third_person_singular`", "`verb_present_participle`", "`adjective`", "`adverb`", "`conjunction`", "`preposition`", "`comment`"], WHERE: ["`name`=?"], BIND_PARAMS: [name] };
+    const SQL = `SELECT ${SQLSnippet.SELECT?.join(",")} FROM ${SQL_TABLE} WHERE ${SQLSnippet.WHERE?.join("")}`;
+    console.log(mysql.format(SQL, SQLSnippet.BIND_PARAMS));
+    return await DB.execute<TypeEntity[]>(SQL, SQLSnippet.BIND_PARAMS);
 };
 
-export { doList, doInsert, doUpdate, doDelete, exist };
+export { doList, doInsert, doUpdate, doDelete, findByName };

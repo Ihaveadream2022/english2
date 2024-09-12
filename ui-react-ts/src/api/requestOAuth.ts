@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import { RequestResponse, RequestOAuthLoginParams, RequestOAuthUpdatePasswordData } from "../types";
+import { RequestResponse, RequestOAuthLoginParams } from "../types";
 
 // Axios Instance
 const OAuthRequest: AxiosInstance = axios.create({
@@ -25,26 +25,7 @@ const OAuthLogin = (params: RequestOAuthLoginParams): Promise<RequestResponse> =
     return OAuthRequest.post("/open/login", params);
 };
 
-// Logout
-const OAuthLogout = (accessToken: string): Promise<RequestResponse> => {
-    return OAuthRequest.request({
-        headers: { Authorization: "Bearer " + accessToken },
-        method: "post",
-        url: "/logout",
-    });
-};
-
-// Update Password
-const OAuthUpdatePassword = (accessToken: string, data: RequestOAuthUpdatePasswordData): Promise<RequestResponse> => {
-    return OAuthRequest.request({
-        headers: { Authorization: "Bearer " + accessToken },
-        method: "put",
-        url: "/profile/updatePassword",
-        data: data,
-    });
-};
-
-// Load captcha
+// Captcha
 const OAuthCaptcha = (): Promise<RequestResponse> => {
     return OAuthRequest.request({
         method: "get",
@@ -52,4 +33,4 @@ const OAuthCaptcha = (): Promise<RequestResponse> => {
     });
 };
 
-export { OAuthLogin, OAuthLogout, OAuthCaptcha, OAuthUpdatePassword };
+export { OAuthLogin, OAuthCaptcha };

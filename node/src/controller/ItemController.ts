@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import { ServiceError } from "../exception/CustomError";
 import { createAudio } from "../service/ItemTts";
-import { exist, doList, doInsert, doUpdate, doDelete } from "../service/Item";
+import { findByName, doList, doInsert, doUpdate, doDelete } from "../service/Item";
 
 const conList = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const keyword: string = req.query.keyword as string;
-        const orderType: string = req.query.orderType as string;
+        const keyword: string = req.query.keyword?.toString() || "";
+        const orderType: string = req.query.orderType?.toString() || "";
         const pageSize: number = parseInt(req.query.pageSize as string) || 10;
         const pageNo: number = parseInt(req.query.pageNo as string) || 1;
         const data = await doList({ keyword, orderType, pageSize, pageNo });
@@ -26,7 +26,7 @@ const conInsert = async (req: Request, res: Response, next: NextFunction) => {
         if (name === undefined || name.length === 0 || name.length > 255) {
             throw new ServiceError("name length is between 1 and 255");
         }
-        const [one] = await exist(name);
+        const [one] = await findByName(name);
         if (one[0]) {
             throw new ServiceError(`Duplicate entry ${name}`);
         }
@@ -53,7 +53,7 @@ const conUpdate = async (req: Request, res: Response, next: NextFunction) => {
         if (name === undefined || name.length === 0 || name.length > 255) {
             throw new ServiceError("name length is between 1 and 255");
         }
-        const [one] = await exist(name);
+        const [one] = await findByName(name);
         if (one[0] && one[0].id != ID) {
             throw new ServiceError(`Duplicate entry ${name}`);
         }

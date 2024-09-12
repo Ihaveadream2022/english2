@@ -30,18 +30,22 @@ interface RequestItemData {
     common?: string;
     pronounce?: string;
     verb?: string;
-    verbPastTense?: string;
-    verbPastParticiple?: string;
-    verbThirdPersonSingular?: string;
-    verbPresentParticiple?: string;
+    verb_past_tense?: string;
+    verb_past_participle?: string;
+    verb_third_person_singular?: string;
+    verb_present_participle?: string;
     noun?: string;
-    nounPlural?: string;
+    noun_plural?: string;
     adjective?: string;
     adverb?: string;
     conjunction?: string;
     preposition?: string;
     comment?: string;
-    tts?: any;
+    it_id?: number;
+    it_name?: string;
+    it_audio?: string;
+    it_audio_cn?: string;
+    it_audio_source?: number;
 }
 interface RequestItemDataDelete {
     id: number;

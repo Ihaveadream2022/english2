@@ -1,21 +1,19 @@
 import { useState } from "react";
 import { Button, Modal, Form, Input, message, Popconfirm, Space } from "antd";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { clearToken } from "../../stores/reducers/auth";
-import { OAuthLogout, OAuthUpdatePassword } from "../../api/requestOAuth";
+import { OAuthLogout, OAuthUpdatePassword } from "../../api/request";
 import { LockOutlined, QuestionCircleOutlined, PoweroffOutlined } from "@ant-design/icons";
-import { RootState } from "../../stores";
 import { RequestOAuthUpdatePasswordData } from "../../types";
 
 const AppHeaderPanel = () => {
     const [CPDialogVisible, setCPDialogVisible] = useState(false);
     const dispatch = useDispatch();
-    const token = useSelector((state: RootState) => `${state.auth.ACCESS_TOKEN}`);
     const [messageApi, contextHolder] = message.useMessage();
     const [fromChangePass] = Form.useForm();
     const onConfirmLogout = async () => {
         try {
-            const res = await OAuthLogout(token);
+            const res = await OAuthLogout();
             if (res.code) {
                 messageApi.open({
                     type: "success",
@@ -40,12 +38,11 @@ const AppHeaderPanel = () => {
         fromChangePass.validateFields()
             .then((fields) => {
                 messageApi.open({ type: "loading", content: "Loading..", duration: 0 });
-                const dataToken = `${token}`;
                 const data: RequestOAuthUpdatePasswordData = { 
                     oldPassword: `${fields.oldPassword}`, 
                     newPassword: `${fields.newPassword}` 
                 };
-                OAuthUpdatePassword(dataToken, data)
+                OAuthUpdatePassword(data)
                     .then(
                         (res) => {
                             if (res.code) {
@@ -56,7 +53,7 @@ const AppHeaderPanel = () => {
                                     duration: 2,
                                     onClose: () => {
                                         setCPDialogVisible(false);
-                                        OAuthLogout(token);
+                                        OAuthLogout();
                                         dispatch(clearToken());
                                     },
                                 });

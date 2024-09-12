@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { findByUsername } from "../service/User";
 import { ServiceError } from "../exception/CustomError";
-import { checkString } from "../service/Bcrypt";
+import { checkString } from "../utils/Bcrypt";
 import jwt from "jsonwebtoken";
 import redis from "../lib/Redis";
 import { generateUUID } from "../utils/UUID";

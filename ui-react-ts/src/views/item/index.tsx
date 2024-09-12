@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Table, Input, Button, Modal, Form, Space, Row, Col, message, Popconfirm, Select } from "antd";
 import type { PaginationProps, GetProps, InputRef } from "antd";
-import { itemList, itemAdd, itemEdit, itemDelete, ttsGet } from "../../api/request";
+import { itemList, itemAdd, itemEdit, itemDelete, ttsGen } from "../../api/request";
 import "./index.scss";
 import { PlusCircleOutlined, PlayCircleOutlined, QuestionCircleOutlined, EditOutlined, DeleteOutlined, SearchOutlined, LoadingOutlined } from "@ant-design/icons";
 import { RequestItemParams, RequestItemData, RequestItemDataDelete, PlayLoopAudio } from "../../types";
@@ -46,7 +46,7 @@ function Item() {
         getTableList({ pageNo: current, pageSize: pageSize });
     };
     const onSearch: SearchProps["onSearch"] = (value) => {
-        getTableList({ ...dataQueryParams, keyword: `${value}` });
+        getTableList({ ...dataQueryParams, pageNo: 1, pageSize: 10, keyword: `${value}` });
     };
     const onClickAdd = () => {
         setAddDialogVisible(true);
@@ -66,12 +66,12 @@ function Item() {
                 if (fields.common) data.common = `${fields.common}`;
                 if (fields.pronounce) data.pronounce = `${fields.pronounce}`;
                 if (fields.noun) data.noun = `${fields.noun}`;
-                if (fields.nounPlural) data.nounPlural = `${fields.nounPlural}`;
+                if (fields.noun_plural) data.noun_plural = `${fields.noun_plural}`;
                 if (fields.verb) data.verb = `${fields.verb}`;
-                if (fields.verbPastTense) data.verbPastTense = `${fields.verbPastTense}`;
-                if (fields.verbPastParticiple) data.verbPastParticiple = `${fields.verbPastParticiple}`;
-                if (fields.verbThirdPersonSingular) data.verbThirdPersonSingular = `${fields.verbThirdPersonSingular}`;
-                if (fields.verbPresentParticiple) data.verbPresentParticiple = `${fields.verbPresentParticiple}`;
+                if (fields.verb_past_tense) data.verb_past_tense = `${fields.verb_past_tense}`;
+                if (fields.verb_past_participle) data.verb_past_participle = `${fields.verb_past_participle}`;
+                if (fields.verb_third_person_singular) data.verb_third_person_singular = `${fields.verb_third_person_singular}`;
+                if (fields.verb_present_participle) data.verb_present_participle = `${fields.verb_present_participle}`;
                 if (fields.adjective) data.adjective = `${fields.adjective}`;
                 if (fields.adverb) data.adverb = `${fields.adverb}`;
                 if (fields.conjunction) data.conjunction = `${fields.conjunction}`;
@@ -149,11 +149,11 @@ function Item() {
     };
     const onPlay = async (row: RequestItemData) => {
         try {
-            const res = await ttsGet({ name: row.name });
+            const res = await ttsGen({ name: row.name });
             if (res.code) {
                 if (refAudio.current) {
                     const audio = refAudio.current;
-                    audio.src = "data:audio/wav;base64," + res.data.audio;
+                    audio.src = "data:audio/wav;base64," + res.data;
                     audio.load();
                     audio.play();
                 }
@@ -183,15 +183,15 @@ function Item() {
                 { property: "conjunction", reg: /(conj)\.\s*([^\n]+)/ },
                 { property: "pronoun", reg: /(pron)\.\s*([^\n]+)/ },
                 { property: "preposition", reg: /(prep)\.\s*([^\n]+)/ },
-                { property: "nounPlural", reg: /复数(.*?)(\w+)/ },
-                { property: "verbPastTense", reg: /过去式(.*?)(\w+)/ },
-                { property: "verbPastParticiple", reg: /过去分词(.*?)(\w+)/ },
-                { property: "verbPresentParticiple", reg: /现在分词(.*?)(\w+)/ },
-                { property: "verbThirdPersonSingular", reg: /第三人称单数(.*?)(\w+)/ },
+                { property: "noun_plural", reg: /复数(.*?)(\w+)/ },
+                { property: "verb_past_tense", reg: /过去式(.*?)(\w+)/ },
+                { property: "verb_past_participle", reg: /过去分词(.*?)(\w+)/ },
+                { property: "verb_present_participle", reg: /现在分词(.*?)(\w+)/ },
+                { property: "verb_third_person_singular", reg: /第三人称单数(.*?)(\w+)/ },
             ];
             const baseArr = ["name", "pronounce"];
             const classArr = ["noun", "verb", "adjective", "adverb", "conjunction", "pronoun", "preposition"];
-            const tagArr = ["nounPlural", "verbPastTense", "verbPastParticiple", "verbPresentParticiple", "verbThirdPersonSingular"];
+            const tagArr = ["noun_plural", "verb_past_tense", "verb_past_participle", "verb_present_participle", "verb_third_person_singular"];
             for (let i = 0; i < regs.length; i++) {
                 const matches = copiedText.match(regs[i]["reg"]);
                 if (matches) {
@@ -239,17 +239,17 @@ function Item() {
         });
     };
     const getName = (name: string, row: RequestItemData) => {
-        if (row.verbPastTense && row.name + "d" !== row.verbPastTense && row.name + "ed" !== row.verbPastTense && row.name.slice(0, -1) + "ied" !== row.verbPastTense) {
-            name += ` / ${row.verbPastTense}`;
+        if (row.verb_past_tense && row.name + "d" !== row.verb_past_tense && row.name + "ed" !== row.verb_past_tense && row.name.slice(0, -1) + "ied" !== row.verb_past_tense) {
+            name += ` / ${row.verb_past_tense}`;
         }
-        if (row.verbPastParticiple && row.name + "d" !== row.verbPastParticiple && row.name + "ed" !== row.verbPastParticiple && row.name.slice(0, -1) + "ied" !== row.verbPastParticiple) {
-            name += ` / ${row.verbPastParticiple}`;
+        if (row.verb_past_participle && row.name + "d" !== row.verb_past_participle && row.name + "ed" !== row.verb_past_participle && row.name.slice(0, -1) + "ied" !== row.verb_past_participle) {
+            name += ` / ${row.verb_past_participle}`;
         }
-        if (row.verbPresentParticiple && row.name + "ing" !== row.verbPresentParticiple && row.name.slice(0, -1) + "ing" !== row.verbPresentParticiple) {
-            name += ` / ${row.verbPresentParticiple}`;
+        if (row.verb_present_participle && row.name + "ing" !== row.verb_present_participle && row.name.slice(0, -1) + "ing" !== row.verb_present_participle) {
+            name += ` / ${row.verb_present_participle}`;
         }
-        if (row.nounPlural && row.name + "s" !== row.nounPlural && row.name + "es" !== row.nounPlural && row.name.slice(0, -1) + "ies" !== row.nounPlural) {
-            name += ` / ${row.nounPlural}`;
+        if (row.noun_plural && row.name + "s" !== row.noun_plural && row.name + "es" !== row.noun_plural && row.name.slice(0, -1) + "ies" !== row.noun_plural) {
+            name += ` / ${row.noun_plural}`;
         }
         return <div>{name}</div>;
     };
@@ -263,7 +263,7 @@ function Item() {
             const valueNew = valueOld + 1;
             setTimeout(() => {
                 if (refAudioLoop.current && dataTableList.length > 0) {
-                    refAudioLoop.current.src = "data:audio/wav;base64," + dataTableList[valueOld].tts.audio;
+                    refAudioLoop.current.src = "data:audio/wav;base64," + dataTableList[valueOld].it_audio;
                     refAudioLoop.current.load();
                     refAudioLoop.current.play();
                     if (valueNew >= dataTableList.length) {
@@ -354,29 +354,29 @@ function Item() {
                     </Row>
                     <Row gutter={10}>
                         <Col span={8}>
-                            <Form.Item name="nounPlural">
+                            <Form.Item name="noun_plural">
                                 <Input size="middle" placeholder="复数" suffix="复数" />
                             </Form.Item>
                         </Col>
                         <Col span={8}>
-                            <Form.Item name="verbThirdPersonSingular">
+                            <Form.Item name="verb_third_person_singular">
                                 <Input size="middle" placeholder="第三人称" suffix="第三人称" />
                             </Form.Item>
                         </Col>
                     </Row>
                     <Row gutter={10}>
                         <Col span={8}>
-                            <Form.Item name="verbPastTense">
+                            <Form.Item name="verb_past_tense">
                                 <Input size="middle" placeholder="过去式" suffix="过去式" />
                             </Form.Item>
                         </Col>
                         <Col span={8}>
-                            <Form.Item name="verbPastParticiple">
+                            <Form.Item name="verb_past_participle">
                                 <Input size="middle" placeholder="过去分词" suffix="过去分词" />
                             </Form.Item>
                         </Col>
                         <Col span={8}>
-                            <Form.Item name="verbPresentParticiple">
+                            <Form.Item name="verb_present_participle">
                                 <Input size="middle" placeholder="现在分词" suffix="现在分词" />
                             </Form.Item>
                         </Col>
