@@ -54,7 +54,7 @@ const Vocabulary: React.FC<props> = ({ content, onChange }) => {
     };
     const onPlay = async (row: VocabularyData) => {
         try {
-            const res = await ttsGen({ name: row.key });
+            const res = await ttsGen({ content: row.form.replace(/ \//g, ","), type: 1 });
             if (res.code) {
                 if (refAudio.current) {
                     const audio = refAudio.current;
@@ -81,18 +81,13 @@ const Vocabulary: React.FC<props> = ({ content, onChange }) => {
         }
     };
     const getName = (name: string, row: RequestItemData) => {
-        if (row.verb_past_tense && row.name + "d" !== row.verb_past_tense && row.name + "ed" !== row.verb_past_tense && row.name.slice(0, -1) + "ied" !== row.verb_past_tense) {
-            name += ` / ${row.verb_past_tense}`;
-        }
-        if (row.verb_past_participle && row.name + "d" !== row.verb_past_participle && row.name + "ed" !== row.verb_past_participle && row.name.slice(0, -1) + "ied" !== row.verb_past_participle) {
-            name += ` / ${row.verb_past_participle}`;
-        }
-        if (row.verb_present_participle && row.name + "ing" !== row.verb_present_participle && row.name.slice(0, -1) + "ing" !== row.verb_present_participle) {
-            name += ` / ${row.verb_present_participle}`;
-        }
-        if (row.noun_plural && row.name + "s" !== row.noun_plural && row.name + "es" !== row.noun_plural && row.name.slice(0, -1) + "ies" !== row.noun_plural) {
-            name += ` / ${row.noun_plural}`;
-        }
+        const participlePast = [`${row.name}d`, `${row.name}ed`, `${row.name.slice(0, -1)}ied`];
+        const participlePresent = [`${row.name}ing`, `${row.name.slice(0, -1)}ing`];
+        const plural = [`${row.name}s`, `${row.name}es`, `${row.name.slice(0, -1)}ies`];
+        if (row.verb_past_tense && !participlePast.includes(row.verb_past_tense)) name += ` / ${row.verb_past_tense}`;
+        if (row.verb_past_participle && !participlePast.includes(row.verb_past_participle)) name += ` / ${row.verb_past_participle}`;
+        if (row.verb_present_participle && !participlePresent.includes(row.verb_present_participle)) name += ` / ${row.verb_present_participle}`;
+        if (row.noun_plural && !plural.includes(row.noun_plural)) name += ` / ${row.noun_plural}`;
         return name;
     };
     const onClickClear = () => {

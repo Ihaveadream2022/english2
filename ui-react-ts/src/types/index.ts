@@ -55,7 +55,8 @@ export type { RequestItemParams, RequestItemData, RequestItemDataDelete };
 
 /* TTS */
 interface RequestTtsData {
-    name: string;
+    content: string;
+    type: number;
 }
 interface PlayLoopAudio {
     playing: null | boolean;

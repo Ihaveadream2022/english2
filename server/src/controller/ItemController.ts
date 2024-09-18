@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import { ServiceError } from "../exception/CustomError";
-import { createAudio } from "../service/ItemTts";
 import { findByName, doList, doInsert, doUpdate, doDelete } from "../service/Item";
 
 const conList = async (req: Request, res: Response, next: NextFunction) => {
@@ -31,9 +30,6 @@ const conInsert = async (req: Request, res: Response, next: NextFunction) => {
             throw new ServiceError(`Duplicate entry ${name}`);
         }
         const [result] = await doInsert(req.body);
-        if (result.affectedRows) {
-            await createAudio(req.body);
-        }
         res.json({
             code: result.affectedRows ? 1 : 0,
             message: result.affectedRows ? "Success" : "Failed",
@@ -58,10 +54,6 @@ const conUpdate = async (req: Request, res: Response, next: NextFunction) => {
             throw new ServiceError(`Duplicate entry ${name}`);
         }
         const [result] = await doUpdate(req.body, ID);
-        console.log("result.affectedRows", result);
-        if (result.affectedRows) {
-            await createAudio(req.body, name);
-        }
         res.json({
             code: result.affectedRows ? 1 : 0,
             message: result.affectedRows ? "Success" : "Failed",

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Bold from "@tiptap/extension-bold";
@@ -11,13 +11,16 @@ import { Color } from "@tiptap/extension-color";
 import { Button, Space, Row } from "antd";
 import { BoldOutlined, ItalicOutlined, UnderlineOutlined, DashOutlined, BgColorsOutlined, ClearOutlined } from "@ant-design/icons";
 import "./index.scss";
+import debounce from "lodash.debounce";
 
 interface props {
     content: string;
     onChange: (content: string) => void;
+    onSelect?: (content: string) => void;
 }
 const extensions = [StarterKit, Bold, Italic, Underline, HorizontalRule, Color, Paragraph, TextStyle];
-const Tiptap: React.FC<props> = ({ content, onChange }) => {
+const Tiptap: React.FC<props> = ({ content, onChange, onSelect }) => {
+    const refPanel = useRef<HTMLDivElement>(null);
     const editor = useEditor({
         extensions,
         content,
@@ -41,18 +44,61 @@ const Tiptap: React.FC<props> = ({ content, onChange }) => {
         editor?.chain().focus().unsetUnderline().run();
         editor?.chain().focus().unsetItalic().run();
     };
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) {
+                    if (refPanel.current && !refPanel.current.classList.contains("fixed")) {
+                        refPanel.current.classList.add("fixed");
+                    }
+                }
+            });
+        },
+        {
+            root: null,
+            rootMargin: "0px",
+            threshold: 0,
+        }
+    );
+    if (refPanel.current) observer.observe(refPanel.current);
+
+    const eventHandlerScroll = (e: any) => {
+        if (e.target.scrollTop === 0) {
+            if (refPanel.current) {
+                refPanel.current.classList.remove("fixed");
+            }
+        }
+    };
+
     useEffect(() => {
         if (editor && content !== editor.getHTML()) {
             editor.commands.setContent(content);
         }
-    }, [content, editor]);
-    
+    }, [content, editor]); // 挂载、移除、内容变化
+    useEffect(() => {
+        if (!editor) return;
+        const handleSelectionUpdate = debounce(() => {
+            const { from, to } = editor.state.selection;
+            const selectedText = editor.state.doc.textBetween(from, to, " ");
+            console.log("Selected text:", selectedText);
+            onSelect?.(selectedText);
+        }, 500);
+        // 监听选区更新事件
+        editor.on("selectionUpdate", handleSelectionUpdate);
+        // 清理事件监听器
+        return () => {
+            editor.off("selectionUpdate", handleSelectionUpdate);
+        };
+    }, [editor]); // 挂载与移除
+
+    window.addEventListener("scroll", eventHandlerScroll, true);
+
     console.log("Tiptap Loaded");
 
     return (
         <div>
             <Row>
-                <Space className="panel" style={{ marginBottom: "10px" }}>
+                <Space ref={refPanel} className="panel" style={{ marginBottom: "10px" }}>
                     {/* prettier-ignore */}
                     <Button onClick={() => { editor?.chain().focus().toggleBold().run() }}><BoldOutlined />Bold</Button>
                     {/* prettier-ignore */}

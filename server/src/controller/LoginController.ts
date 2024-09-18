@@ -54,3 +54,26 @@ export const captcha = async (req: Request, res: Response, next: NextFunction) =
         next(err);
     }
 };
+
+export const test = async (req: Request, res: Response, next: NextFunction) => {
+    // fetch("http://localhost:9000/api/open/captcha").then(
+    //     (r) => {
+    //         r.json().then(
+    //             (r2) => {
+    //                 console.log("处理数据1：", r2);
+    //                 // 因为已经响应客户端了，此处不能再操作 HTTP 返回数据。
+    //             },
+    //             (e2) => {
+    //                 console.log("e2", e2);
+    //             },
+    //         );
+    //     },
+    //     (e1) => {
+    //         console.log("e1", e1);
+    //     },
+    // );
+    // res.json({
+    //     code: 1,
+    //     message: "Success1",
+    // });
+};

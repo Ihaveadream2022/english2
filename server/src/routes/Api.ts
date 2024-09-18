@@ -3,7 +3,7 @@ import { doList as LCDoList, doInsert as LCDoInsert, doUpdate as LCDoUpdate, doD
 import { conList as ECList, conInsert as ECInsert, conUpdate as ECUpdate, conDelete as ECDelete } from "../controller/EssayController";
 import { conList as ICList, conInsert as ICInsert, conUpdate as ICUpdate, conDelete as ICDelete } from "../controller/ItemController";
 import { conList as GCList, conInsert as GCInsert, conUpdate as GCUpdate, conDelete as GCDelete } from "../controller/GrammarController";
-import { conOne as TTCOne, conGenerate as TTCGenerate } from "../controller/ItemTtsController";
+import { conGenerate as TCGenerate } from "../controller/TtsController";
 import { conUpdatePass as UCUpdatePass } from "../controller/UserController";
 
 const router = express.Router();
@@ -17,8 +17,7 @@ router.post("/items", ICInsert);
 router.put("/items/:id", ICUpdate);
 router.delete("/items/:id", ICDelete);
 
-router.get("/itemTts", TTCOne);
-router.get("/itemTts/gen", TTCGenerate);
+router.get("/tts/gen", TCGenerate);
 
 router.get("/listening", LCDoList);
 router.post("/listening", LCDoInsert);

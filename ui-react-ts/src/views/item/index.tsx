@@ -149,7 +149,7 @@ function Item() {
     };
     const onPlay = async (row: RequestItemData) => {
         try {
-            const res = await ttsGen({ name: row.name });
+            const res = await ttsGen({ content: getName(row.name, row).replace(/ \//g, ","), type: 1 });
             if (res.code) {
                 if (refAudio.current) {
                     const audio = refAudio.current;
@@ -239,38 +239,39 @@ function Item() {
         });
     };
     const getName = (name: string, row: RequestItemData) => {
-        if (row.verb_past_tense && row.name + "d" !== row.verb_past_tense && row.name + "ed" !== row.verb_past_tense && row.name.slice(0, -1) + "ied" !== row.verb_past_tense) {
-            name += ` / ${row.verb_past_tense}`;
-        }
-        if (row.verb_past_participle && row.name + "d" !== row.verb_past_participle && row.name + "ed" !== row.verb_past_participle && row.name.slice(0, -1) + "ied" !== row.verb_past_participle) {
-            name += ` / ${row.verb_past_participle}`;
-        }
-        if (row.verb_present_participle && row.name + "ing" !== row.verb_present_participle && row.name.slice(0, -1) + "ing" !== row.verb_present_participle) {
-            name += ` / ${row.verb_present_participle}`;
-        }
-        if (row.noun_plural && row.name + "s" !== row.noun_plural && row.name + "es" !== row.noun_plural && row.name.slice(0, -1) + "ies" !== row.noun_plural) {
-            name += ` / ${row.noun_plural}`;
-        }
-        return <div>{name}</div>;
+        const participlePast = [`${row.name}d`, `${row.name}ed`, `${row.name.slice(0, -1)}ied`];
+        const participlePresent = [`${row.name}ing`, `${row.name.slice(0, -1)}ing`];
+        const plural = [`${row.name}s`, `${row.name}es`, `${row.name.slice(0, -1)}ies`];
+        if (row.verb_past_tense && !participlePast.includes(row.verb_past_tense)) name += ` / ${row.verb_past_tense}`;
+        if (row.verb_past_participle && !participlePast.includes(row.verb_past_participle)) name += ` / ${row.verb_past_participle}`;
+        if (row.verb_present_participle && !participlePresent.includes(row.verb_present_participle)) name += ` / ${row.verb_present_participle}`;
+        if (row.noun_plural && !plural.includes(row.noun_plural)) name += ` / ${row.noun_plural}`;
+        return name;
     };
     const setStoping = () => {
         setAudioLoopPlay(false);
         setAudioLoopPlayIndex(0);
         refAudioLoop.current?.removeEventListener("ended", onPlaying, false);
     };
-    const onPlaying = useCallback(() => {
+    const onPlaying = useCallback(async () => {
         setAudioLoopPlayIndex((valueOld) => {
             const valueNew = valueOld + 1;
-            setTimeout(() => {
-                if (refAudioLoop.current && dataTableList.length > 0) {
-                    refAudioLoop.current.src = "data:audio/wav;base64," + dataTableList[valueOld].it_audio;
-                    refAudioLoop.current.load();
-                    refAudioLoop.current.play();
-                    if (valueNew >= dataTableList.length) {
-                        setAudioLoopPlayIndex(0);
-                    }
-                }
-            }, 2000);
+            const content = getName(dataTableList[valueOld].name, dataTableList[valueOld]).replace(/ \//g, "");
+            ttsGen({ content: content, type: 1 }).then(
+                (res) => {
+                    setTimeout(() => {
+                        if (refAudioLoop.current && dataTableList.length > 0) {
+                            refAudioLoop.current.src = "data:audio/wav;base64," + res.data;
+                            refAudioLoop.current.load();
+                            refAudioLoop.current.play();
+                            if (valueNew >= dataTableList.length) {
+                                setAudioLoopPlayIndex(0);
+                            }
+                        }
+                    }, 2000);
+                },
+                (err) => {},
+            );
             return valueNew;
         });
     }, [dataTableList]);
@@ -310,7 +311,8 @@ function Item() {
                     };
                 }}
                 pagination={{ position: ["bottomLeft"], current: dataQueryParams.pageNo, pageSize: dataQueryParams.pageSize, total: dataTableListTotal, onChange: onChangePage }}>
-                <Column title="Name" dataIndex="name" key="name" width={"250px"} align="left" render={(name: any, record: RequestItemData) => getName(name, record)} />
+                <Column title="Name" dataIndex="name" key="name" width={"250px"} align="left" render={ (name: any, record: RequestItemData) => getName(name, record) } />
+                <Column title="Pronounce" dataIndex="pronounce" key="pronounce" width={"120px"} align="left" />
                 <Column title="Common" dataIndex="common" key="common" width={"150px"} align="left" />
                 <Column title="Verb" dataIndex="verb" key="verb" width={"200px"} align="left" ellipsis />
                 <Column title="Noun" dataIndex="noun" key="noun" width={"200px"} align="left" ellipsis />

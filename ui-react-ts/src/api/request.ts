@@ -52,17 +52,10 @@ export const itemDelete = (data: RequestItemDataDelete): Promise<RequestResponse
 // Item
 
 // TTS
-export const ttsGet = (params: RequestTtsData): Promise<RequestResponse> => {
-    return requestBase.request({
-        method: "get",
-        url: "/itemTts",
-        params: params,
-    });
-};
 export const ttsGen = (params: RequestTtsData): Promise<RequestResponse> => {
     return requestBase.request({
         method: "get",
-        url: "/itemTts/gen",
+        url: "/tts/gen",
         params: params,
     });
 };

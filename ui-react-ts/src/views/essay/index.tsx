@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Table, Input, Button, Modal, Form, Space, Row, message, Popconfirm, Select, Col } from "antd";
 import type { PaginationProps, GetProps } from "antd";
-import { essayList, essayAdd, essayEdit, essayDelete } from "../../api/request";
+import { essayList, essayAdd, essayEdit, essayDelete, ttsGen } from "../../api/request";
 import { PlusCircleOutlined, QuestionCircleOutlined, DeleteOutlined, SearchOutlined, EyeOutlined } from "@ant-design/icons";
 import { RequestEssayParams, RequestEssayData, RequestEssayDataDelete } from "../../types";
 import { ContextVocabulary } from "../components/context";
@@ -22,6 +22,7 @@ const Essay: React.FC = () => {
     const [dataEditorContent, setDataEditorContent] = useState<string>("");
     const [dataVocabularyContent, setDataVocabularyContent] = useState<string>("[]");
     const [messageApi, contextHolder] = message.useMessage();
+    const refAudio = useRef<HTMLAudioElement>(null);
     const [form] = Form.useForm();
     const [random, setRandom] = useState<number>(Date.now());
 
@@ -150,6 +151,26 @@ const Essay: React.FC = () => {
     const onChangeEditor = (content: string) => {
         setDataEditorContent(content);
     };
+    const onSelectEditor = async (content: string) => {
+        try {
+            console.log("content", content);
+            if (content) {
+                const res = await ttsGen({ content: content, type: 1 });
+                if (res.code) {
+                    if (refAudio.current) {
+                        const audio = refAudio.current;
+                        audio.src = "data:audio/wav;base64," + res.data;
+                        audio.load();
+                        audio.play();
+                    }
+                }
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                console.log(error);
+            }
+        }
+    };
     const onChangeVocabulary = (content: string) => {
         console.log("onChangeVocabulary: ", content);
         setDataVocabularyContent(content);
@@ -201,7 +222,7 @@ const Essay: React.FC = () => {
                     <Row gutter={10}>
                         <Col span={12}>
                             <Form.Item name="content" style={{ marginBottom: "10px" }}>
-                                <Tiptap content={dataEditorContent} onChange={onChangeEditor} />
+                                <Tiptap content={dataEditorContent} onChange={onChangeEditor} onSelect={onSelectEditor} />
                             </Form.Item>
                             <Form.Item name="title" rules={[{ required: true, message: "Please input title" }]}>
                                 <Input size="middle" placeholder="标题" />
@@ -220,6 +241,9 @@ const Essay: React.FC = () => {
                     </Row>
                 </Form>
             </Modal>
+            <div style={{ display: "none" }}>
+                <audio ref={refAudio}></audio>
+            </div>
         </div>
     );
 };
