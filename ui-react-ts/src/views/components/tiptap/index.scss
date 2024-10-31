@@ -21,10 +21,8 @@
     }
 }
 
-.panel {
-    &.fixed {
-        position: fixed;
-        top: 10px;
-        z-index: 999;
-    }
+.fixed {
+    position: fixed;
+    top: 10px;
+    z-index: 999;
 }

@@ -1,0 +1,15 @@
+/* 下拉菜单弹窗 */
+.el-popper.el-dropdown__popper {
+    box-shadow: none !important;
+    top: 50px !important;
+    .el-dropdown-menu {
+        padding: 0 !important;
+        .el-dropdown-menu__item {
+            padding: 10px 26px;
+            border-bottom: 1px solid #eee;
+            &:last-child {
+                border-bottom: 0;
+            }
+        }
+    }
+}

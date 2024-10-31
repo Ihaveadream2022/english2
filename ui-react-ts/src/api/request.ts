@@ -26,7 +26,6 @@ export const itemList = (params: RequestItemParams): Promise<RequestResponse> =>
         params: params,
     });
 };
-
 export const itemAdd = (data: RequestItemData): Promise<RequestResponse> => {
     return requestBase.request({
         method: "post",
@@ -34,7 +33,6 @@ export const itemAdd = (data: RequestItemData): Promise<RequestResponse> => {
         data: data,
     });
 };
-
 export const itemEdit = (data: RequestItemData): Promise<RequestResponse> => {
     return requestBase.request({
         method: "put",
@@ -42,7 +40,6 @@ export const itemEdit = (data: RequestItemData): Promise<RequestResponse> => {
         data: data,
     });
 };
-
 export const itemDelete = (data: RequestItemDataDelete): Promise<RequestResponse> => {
     return requestBase.request({
         method: "delete",

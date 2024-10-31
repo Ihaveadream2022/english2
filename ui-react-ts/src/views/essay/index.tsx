@@ -1,11 +1,12 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Table, Input, Button, Modal, Form, Space, Row, message, Popconfirm, Select, Col } from "antd";
 import type { PaginationProps, GetProps } from "antd";
 import { essayList, essayAdd, essayEdit, essayDelete, ttsGen } from "../../api/request";
-import { PlusCircleOutlined, QuestionCircleOutlined, DeleteOutlined, SearchOutlined, EyeOutlined } from "@ant-design/icons";
+import { PlusCircleOutlined, QuestionCircleOutlined, DeleteOutlined, SearchOutlined, EyeOutlined, EditOutlined } from "@ant-design/icons";
 import { RequestEssayParams, RequestEssayData, RequestEssayDataDelete } from "../../types";
 import { ContextVocabulary } from "../components/context";
 import Tiptap from "../components/tiptap";
+import TiptapWritePad from "../components/tiptap/writepad";
 import Vocabulary from "./Vocabulary";
 
 const { Column } = Table;
@@ -13,6 +14,7 @@ const { Search } = Input;
 type SearchProps = GetProps<typeof Input.Search>;
 const Essay: React.FC = () => {
     const [AddDialogVisible, setAddDialogVisible] = useState(false);
+    const [WriteDialogVisible, setWriteDialogVisible] = useState(false);
     const [titleDialog, setTitleDialog] = useState("Add Essay");
     const [dataQueryParams, setDataQueryParams] = useState<RequestEssayParams>({ pageNo: 1, pageSize: 10 });
     const [dataTableListTotal, setDataTableListTotal] = useState(0);
@@ -20,6 +22,10 @@ const Essay: React.FC = () => {
     const [dataTableLoading, setDataTableLoading] = useState(false);
     const [dataTableCurrentRow, setDataTableCurrentRow] = useState<RequestEssayData>();
     const [dataEditorContent, setDataEditorContent] = useState<string>("");
+    const [dataEditorContentWriteLastRight, setDataEditorContentWriteLastRight] = useState<string>("");
+    const [dataEditorContentWriteLastWrong, setDataEditorContentWriteLastWrong] = useState<string>("");
+    const [dataEditorContentWrite, setDataEditorContentWrite] = useState<string>("");
+    const [dataEditorContentText, setDataEditorContentText] = useState<string>("");
     const [dataVocabularyContent, setDataVocabularyContent] = useState<string>("[]");
     const [messageApi, contextHolder] = message.useMessage();
     const refAudio = useRef<HTMLAudioElement>(null);
@@ -63,6 +69,15 @@ const Essay: React.FC = () => {
         setRandom(Date.now());
         form.setFieldsValue(data);
     };
+    const onClickWrite = (record: RequestEssayData) => {
+        const data = JSON.parse(JSON.stringify(record));
+        const contentFilter = data.content.replaceAll("</p>", " </p>");
+        const div = document.createElement("div");
+        div.innerHTML = contentFilter;
+        setDataEditorContent(data.content);
+        setDataEditorContentText(div.innerText);
+        setWriteDialogVisible(true);
+    };
     const onOkAddDialog = () => {
         form.validateFields()
             .then((fields) => {
@@ -95,7 +110,7 @@ const Essay: React.FC = () => {
                                 messageApi.destroy();
                                 messageApi.open({ type: "error", duration: 2, content: error.message });
                             }
-                        },
+                        }
                     )
                     .catch((error) => {
                         if (error instanceof Error) {
@@ -115,6 +130,12 @@ const Essay: React.FC = () => {
         setDataVocabularyContent("[]");
         form.resetFields();
         messageApi.destroy();
+    };
+    const onCancelWriteDialog = () => {
+        setDataEditorContent("");
+        setDataEditorContentWrite("");
+        setDataEditorContentWriteLastWrong("");
+        setWriteDialogVisible(false);
     };
     const onConfirmDelete = async (id: number) => {
         try {
@@ -151,6 +172,25 @@ const Essay: React.FC = () => {
     const onChangeEditor = (content: string) => {
         setDataEditorContent(content);
     };
+    const onChangeWriteEditor = (content: string) => {
+        const pureInput = content.replace(/[^a-zA-Z'-]+/g, " ");
+        // console.log("pureInput: ", pureInput);
+        const pureContent = dataEditorContentText.replace(/[^a-zA-Z'-]+/g, " ");
+        // console.log("pureContent: ", pureContent);
+        const regex = new RegExp(`^${pureInput}`, "g");
+        const res = pureContent.match(regex);
+        if (res && res[0]) {
+            console.log("Right");
+            let con = content.replace(/\n+/g, "<br>");
+            con = con.replace(/ /g, "&nbsp;");
+            setDataEditorContentWriteLastRight(con);
+            setDataEditorContentWrite(con);
+        } else {
+            console.log("Wrong!");
+            setDataEditorContentWriteLastWrong(pureInput.slice(-50));
+            setDataEditorContentWrite("");
+        }
+    };
     const onSelectEditor = async (content: string) => {
         try {
             console.log("content", content);
@@ -172,12 +212,14 @@ const Essay: React.FC = () => {
         }
     };
     const onChangeVocabulary = (content: string) => {
-        console.log("onChangeVocabulary: ", content);
         setDataVocabularyContent(content);
     };
     useEffect(() => {
         getTableList(dataQueryParams);
     }, []); // eslint-disable-line
+    useEffect(() => {
+        if (!dataEditorContentWrite) setDataEditorContentWrite(dataEditorContentWriteLastRight);
+    }, [dataEditorContentWrite]);
 
     console.log("Loaded");
 
@@ -209,6 +251,7 @@ const Essay: React.FC = () => {
                 <Column title="Action" dataIndex="action" key="action" width={"300px"} align="center" 
                      render={(_: any, record: RequestEssayData) => (
                         <Space>
+                            <Button type="primary" onClick={() => onClickWrite(record)} ghost><EditOutlined /> Write</Button>
                             <Button type="primary" onClick={() => onClickEdit(record)} ghost><EyeOutlined /> View</Button>
                             <Popconfirm title="Warning" description="Are you sure to do this?" icon={<QuestionCircleOutlined style={{ color: "red" }} />} onConfirm={() => { if (record.id !== undefined) onConfirmDelete(record.id) }}>
                                 <Button type="primary" danger ghost><DeleteOutlined />Delete</Button>
@@ -217,12 +260,12 @@ const Essay: React.FC = () => {
                     )}
                 />
             </Table>
-            <Modal title={<div style={{ marginBottom: "20px" }}>{titleDialog}</div>} open={AddDialogVisible} onOk={onOkAddDialog} onCancel={onCancelAddDialog} width={1600} style={{ top: 0 }}>
+            <Modal title={<div style={{ marginBottom: "20px" }}>{titleDialog}</div>} open={AddDialogVisible} onOk={onOkAddDialog} onCancel={onCancelAddDialog} destroyOnClose={true} width={1600} style={{ top: 0 }}>
                 <Form form={form} autoComplete="off" style={{ fontSize: "12px" }}>
                     <Row gutter={10}>
                         <Col span={12}>
                             <Form.Item name="content" style={{ marginBottom: "10px" }}>
-                                <Tiptap content={dataEditorContent} onChange={onChangeEditor} onSelect={onSelectEditor} />
+                                <Tiptap content={dataEditorContent} onChange={onChangeEditor} onSelect={onSelectEditor} toolbar />
                             </Form.Item>
                             <Form.Item name="title" rules={[{ required: true, message: "Please input title" }]}>
                                 <Input size="middle" placeholder="标题" />
@@ -240,6 +283,17 @@ const Essay: React.FC = () => {
                         </Col>
                     </Row>
                 </Form>
+            </Modal>
+            <Modal title={<div style={{ marginBottom: "20px" }}>Write Essay</div>} open={WriteDialogVisible} onCancel={onCancelWriteDialog} footer={null} destroyOnClose={true} width={1600} style={{ top: 0 }}>
+                <Row gutter={10}>
+                    <Col span={12}>
+                        <Tiptap content={dataEditorContent} />
+                    </Col>
+                    <Col span={12}>
+                        {dataEditorContentWriteLastWrong}
+                        <TiptapWritePad content={dataEditorContentWrite} onChange={onChangeWriteEditor} />
+                    </Col>
+                </Row>
             </Modal>
             <div style={{ display: "none" }}>
                 <audio ref={refAudio}></audio>

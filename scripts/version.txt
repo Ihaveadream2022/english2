@@ -1,0 +1,14 @@
+
+
+
+
+
+
+
+
+
+
+TODO
+	1. essay vocabulary tool fixed
+	2. 单词同步以应对单词修改
+	3. 发音错误的单词，建立白名单手动发音

@@ -1,9 +1,9 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useCallback } from "react";
 import { useState, useRef } from "react";
-import { Table, Button, Input, Space, Popconfirm } from "antd";
+import { Table, Button, Input, Space, Popconfirm, Select } from "antd";
 import type { GetProps, InputRef } from "antd";
 import { itemList, ttsGen } from "../../api/request";
-import { SearchOutlined, ClearOutlined, QuestionCircleOutlined, DeleteOutlined } from "@ant-design/icons";
+import { SearchOutlined, ClearOutlined, QuestionCircleOutlined, DeleteOutlined, LoadingOutlined, PlayCircleOutlined, EditOutlined, CustomerServiceOutlined } from "@ant-design/icons";
 import { RequestItemParams, RequestItemData, VocabularyData } from "../../types";
 import { ContextVocabulary } from "../components/context";
 import "./Vocabulary.scss";
@@ -22,8 +22,17 @@ const Vocabulary: React.FC<props> = ({ content, onChange }) => {
     const [dataTableCurrentRow, setDataTableCurrentRow] = useState<VocabularyData>();
     const [searchTableVisible, setSearchTableVisible] = useState<boolean>(false);
     const [keywords, setKeywords] = useState<string>("");
+    const [textWord, setTextWord] = useState<string>("");
+    const [audioLoopPlay, setAudioLoopPlay] = useState<boolean>(false);
+    const [audioLoopPlayIndex, setAudioLoopPlayIndex] = useState<number>(0);
+    const [audioLoopPlayType, setAudioLoopPlayType] = useState<number>(1);
+    const [audioDynamicPlay, setAudioDynamicPlay] = useState<boolean>(false);
+    const [audioDynamicPlayType, setAudioDynamicPlayType] = useState<number>(1);
     const refAudio = useRef<HTMLAudioElement>(null);
+    const refAudioLoop = useRef<HTMLAudioElement>(null);
+    const refAudioDynamic = useRef<HTMLAudioElement>(null);
     const refSearch = useRef<InputRef>(null);
+    const refText = useRef<InputRef>(null);
     const random = useContext(ContextVocabulary);
     const [initialContent, setInitialContent] = useState<VocabularyData[]>(JSON.parse(content));
     const getItemList = async (queryParams: RequestItemParams) => {
@@ -41,9 +50,63 @@ const Vocabulary: React.FC<props> = ({ content, onChange }) => {
     const onSearch: SearchProps["onSearch"] = (value) => {
         getItemList({ ...dataQueryParams, keyword: `${value}` });
     };
+    const onText: SearchProps["onSearch"] = async (value) => {
+        const color = getRandomRGBColor();
+        const input = value.split("+");
+        const audio = refAudioDynamic.current;
+        if (audioDynamicPlayType === 2) {
+            if (audio?.getAttribute("data-en") === input[0]) {
+                const elem = document.querySelector(`[data-row-key="${input[0]}"]`) as HTMLElement;
+                elem.style.background = color;
+                elem.style.color = "#fff";
+                setTextWord("");
+                const index = dataTableList.findIndex((v) => {
+                    return v.key === input[0];
+                });
+                const next = dataTableList[index + 1];
+                if (next) {
+                    dynamicPlay(next, audioDynamicPlayType);
+                } else {
+                    dynamicStop();
+                }
+            }
+        }
+        if (audioDynamicPlayType === 1) {
+            const input = value.split("+");
+            const audio = refAudioDynamic.current;
+            console.log(audio?.getAttribute("data-en"));
+            console.log(input[0]);
+            if (audio?.getAttribute("data-en") === input[0]) {
+                const res = await itemList({ byCommon: 1, keyword: `${input[1]}` });
+                for (let item of res.data.list) {
+                    if (item.common === audio?.getAttribute("data-cn")) {
+                        const search = document.querySelector(`[data-row-key="${input[0]}"]`) as HTMLElement;
+                        const htmlElem = search as HTMLElement;
+                        htmlElem.style.background = color;
+                        htmlElem.style.color = "#fff";
+                        setTextWord("");
+                        const index = dataTableList.findIndex((v) => {
+                            return v.value === item.common;
+                        });
+                        console.log(index);
+                        const next = dataTableList[index + 1];
+                        if (next) {
+                            dynamicPlay(next, audioDynamicPlayType);
+                        } else {
+                            dynamicStop();
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    };
     const onChangeSearch = (target: HTMLInputElement) => {
         setKeywords(target.value);
         getItemList({ ...dataQueryParams, keyword: `${target.value}` });
+    };
+    const onChangeText = (target: HTMLInputElement) => {
+        setTextWord(target.value);
     };
     const getRowClassName = (record: VocabularyData) => {
         return dataTableCurrentRow !== undefined && record.key === dataTableCurrentRow.key ? "clicked" : "";
@@ -54,7 +117,7 @@ const Vocabulary: React.FC<props> = ({ content, onChange }) => {
     };
     const onPlay = async (row: VocabularyData) => {
         try {
-            const res = await ttsGen({ content: row.form.replace(/ \//g, ","), type: 1 });
+            const res = await ttsGen({ id: row.id, content: row.form.replace(/ \//g, ","), type: 1 });
             if (res.code) {
                 if (refAudio.current) {
                     const audio = refAudio.current;
@@ -74,7 +137,7 @@ const Vocabulary: React.FC<props> = ({ content, onChange }) => {
             return key === record.name;
         });
         if (!duplicate) {
-            dataTableList.push({ key: record.name, value: record.common ? record.common : "", form: getName(record.name, record) });
+            dataTableList.push({ id: record.id, key: record.name, value: record.common ? record.common : "", form: getName(record.name, record) });
             const newData = JSON.stringify(dataTableList);
             setDataTableList(JSON.parse(newData));
             onChange(newData);
@@ -110,10 +173,108 @@ const Vocabulary: React.FC<props> = ({ content, onChange }) => {
         setDataTableList(JSON.parse(dataNew));
         onChange(dataNew);
     };
+    const onClickPlay = () => {
+        setAudioLoopPlay((valueOld) => {
+            const valueNew = !valueOld;
+            if (refAudioLoop.current) {
+                if (valueOld === false) {
+                    refAudioLoop.current.addEventListener("ended", onPlaying, false);
+                    onPlaying();
+                }
+                if (valueOld === true) {
+                    refAudioLoop.current.removeEventListener("ended", onPlaying, false);
+                    setAudioLoopPlayIndex(0);
+                }
+            }
+            return valueNew;
+        });
+    };
+    const onChangePlayType = (value: number) => {
+        console.log(value);
+        setAudioLoopPlayType(value);
+    };
+    const onChangeDynamicPlayType = (value: number) => {
+        setAudioDynamicPlayType(value);
+    };
+    const onClickDynamicPlay = async () => {
+        clearTableTdStyle();
+        setAudioDynamicPlay((valueOld) => {
+            const valueNew = !valueOld;
+            if (refAudioDynamic.current) {
+                if (valueOld === false) {
+                    dynamicPlay(dataTableList[0], audioDynamicPlayType);
+                }
+                if (valueOld === true) {
+                    refAudioDynamic.current.pause();
+                }
+            }
+            return valueNew;
+        });
+    };
+    const dynamicPlay = async (item: any, type: number) => {
+        try {
+            const res = await ttsGen({ id: item.id, content: type === 1 ? item.key : item.value, type: type });
+            if (res.code) {
+                if (refAudioDynamic.current) {
+                    const audio = refAudioDynamic.current;
+                    audio.src = "data:audio/wav;base64," + res.data;
+                    audio.setAttribute("data-en", item.key);
+                    audio.setAttribute("data-cn", item.value);
+                    audio.load();
+                    audio.play();
+                }
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                console.log(error);
+            }
+        }
+    };
+    const dynamicStop = () => {
+        if (refAudioDynamic.current) {
+            refAudioDynamic.current.pause();
+            setAudioDynamicPlay(false);
+        }
+    };
+    const clearTableTdStyle = () => {
+        const rows = document.querySelectorAll(`.ant-table-row`);
+        rows.forEach((element) => {
+            (element as HTMLElement).style.cssText = "";
+        });
+    };
+    const getRandomRGBColor = () => {
+        var r = Math.floor(Math.random() * 256);
+        var g = Math.floor(Math.random() * 256);
+        var b = Math.floor(Math.random() * 256);
+        return "rgb(" + r + "," + g + "," + b + ")";
+    };
+    const onPlaying = useCallback(async () => {
+        setAudioLoopPlayIndex((valueOld) => {
+            const valueNew = valueOld + 1;
+            const data = dataTableList;
+            const content = audioLoopPlayType === 1 ? data[valueOld].form.replace(/ \//g, "") : data[valueOld].value;
+            ttsGen({ id: data[valueOld].id, content: content, type: audioLoopPlayType }).then(
+                (res) => {
+                    setTimeout(() => {
+                        if (refAudioLoop.current && data.length > 0) {
+                            refAudioLoop.current.src = "data:audio/wav;base64," + res.data;
+                            refAudioLoop.current.load();
+                            refAudioLoop.current.play();
+                            if (valueNew >= data.length) {
+                                setAudioLoopPlayIndex(0);
+                            }
+                        }
+                    }, 2000);
+                },
+                (err) => {}
+            );
+            return valueNew;
+        });
+    }, [dataTableList, audioLoopPlayType]);
 
-    // Everytime Opened, Reset All Data
+    // Everytime Opened, Reset All. 开启 Modal's destroyOnClose 后，该处已无用。
     useEffect(() => {
-        console.log("Reset All Data");
+        console.log("Reset All");
         const data = JSON.parse(content);
         const dataInit = JSON.parse(content);
         setDataTableList(data);
@@ -133,10 +294,20 @@ const Vocabulary: React.FC<props> = ({ content, onChange }) => {
                     {/* prettier-ignore */}
                     <Button onClick={onClickClear}><ClearOutlined /></Button>
                     {/* prettier-ignore */}
-                    <Search ref={refSearch} placeholder="input search text" allowClear suffix={<SearchOutlined />} value={keywords}  onChange={(e) => onChangeSearch(e.target)} onClear={() => {setSearchTableVisible(false)}} enterButton="Search" onSearch={onSearch} style={{width: 230}} />
+                    <Select defaultValue={1} onChange={onChangePlayType} options={[{ value: 1, label: "EN" },{ value: 2, label: "CN" }]} style={{width: 60}} />
+                    {/* prettier-ignore */}
+                    <Button onClick={onClickPlay}>{audioLoopPlay? <LoadingOutlined />: <PlayCircleOutlined />}</Button>
+                    {/* prettier-ignore */}
+                    <Search ref={refSearch} placeholder="input search text" allowClear value={keywords}  onChange={(e) => onChangeSearch(e.target)} onClear={() => {setSearchTableVisible(false)}} enterButton="Search" onSearch={onSearch} style={{width: 200}} />
+                    {/* prettier-ignore */}
+                    <Search ref={refText} placeholder="" allowClear enterButton="Write" onSearch={onText} style={{width: 240}} value={textWord} onChange={(e) => onChangeText(e.target)} />
+                    {/* prettier-ignore */}
+                    <Select defaultValue={1} onChange={onChangeDynamicPlayType} options={[{ value: 1, label: "EN" },{ value: 2, label: "CN" }]} style={{width: 60}} />
+                    {/* prettier-ignore */}
+                    <Button onClick={onClickDynamicPlay}>{audioDynamicPlay ? <LoadingOutlined /> : <CustomerServiceOutlined />}</Button>
                 </Space>
                 {/* prettier-ignore */}
-                <Table bordered dataSource={dataTableList} rowKey={"key"} pagination={false} rowClassName={getRowClassName}
+                <Table bordered dataSource={dataTableList} rowKey={"key"} scroll={{ y: 55 * 10 }} pagination={false} rowClassName={getRowClassName}
                     onRow={(record) => {
                         return {
                             onClick: (event) => { onClickRow(record); },
@@ -168,6 +339,8 @@ const Vocabulary: React.FC<props> = ({ content, onChange }) => {
             </Space>
             <div style={{ display: "none" }}>
                 <audio ref={refAudio}></audio>
+                <audio ref={refAudioLoop}></audio>
+                <audio ref={refAudioDynamic} loop></audio>
             </div>
         </div>
     );

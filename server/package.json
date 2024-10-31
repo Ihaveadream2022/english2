@@ -1,7 +1,7 @@
 {
     "name": "server20240905",
     "version": "1.0.0",
-    "description": "",
+    "description": "server 20240905 NodeJS-20.10.0",
     "main": "index.js",
     "scripts": {
         "start": "node dist/app.js",

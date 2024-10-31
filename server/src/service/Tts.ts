@@ -3,7 +3,6 @@ import { promises } from "fs";
 import util from "util";
 
 const execPromise = util.promisify(exec);
-
 const generateAudio = async (content: string, type: number) => {
     try {
         const file = `${process.cwd()}/uploads/${Date.now()}.wav`;

@@ -19,15 +19,16 @@ export type { RequestResponse, RequestOAuthLoginParams, RequestOAuthUpdatePasswo
 
 /* Item */
 interface RequestItemParams {
-    pageSize: number;
-    pageNo: number;
+    pageSize?: number;
+    pageNo?: number;
     keyword?: string;
     orderType?: string;
+    byCommon?: number;
 }
 interface RequestItemData {
     id?: number;
     name: string;
-    common?: string;
+    common: string;
     pronounce?: string;
     verb?: string;
     verb_past_tense?: string;
@@ -41,11 +42,7 @@ interface RequestItemData {
     conjunction?: string;
     preposition?: string;
     comment?: string;
-    it_id?: number;
-    it_name?: string;
-    it_audio?: string;
-    it_audio_cn?: string;
-    it_audio_source?: number;
+    sound?: string;
 }
 interface RequestItemDataDelete {
     id: number;
@@ -55,6 +52,7 @@ export type { RequestItemParams, RequestItemData, RequestItemDataDelete };
 
 /* TTS */
 interface RequestTtsData {
+    id?: number;
     content: string;
     type: number;
 }
@@ -95,6 +93,7 @@ interface RequestEssayDataDelete {
     id: number;
 }
 interface VocabularyData {
+    id?: number;
     key: string;
     value: string;
     form: string;

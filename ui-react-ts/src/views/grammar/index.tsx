@@ -85,7 +85,7 @@ const Grammar: React.FC = () => {
                                 messageApi.destroy();
                                 messageApi.open({ type: "error", duration: 2, content: error.message });
                             }
-                        },
+                        }
                     )
                     .catch((error) => {
                         if (error instanceof Error) {
@@ -164,7 +164,7 @@ const Grammar: React.FC = () => {
                     };
                 }}
                 pagination={{ position: ["bottomLeft"], current: dataQueryParams.pageNo, pageSize: dataQueryParams.pageSize, total: dataTableListTotal, onChange: onChangePage }}>
-                <Column title="Name" dataIndex="name" key="name" align="center" />
+                <Column title="Name" dataIndex="name" key="name" align="left" />
                 {/* prettier-ignore */}
                 <Column title="Action" dataIndex="action" key="action" width={"300px"} align="center" 
                      render={(_: any, record: RequestGrammarData) => (

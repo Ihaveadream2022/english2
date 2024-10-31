@@ -4,9 +4,9 @@ import { TypeEntity, TypeCount, TypeRequest } from "../types/Grammar";
 
 const doList = async (data: TypeRequest) => {
     const { keyword, orderType, pageSize, pageNo } = data;
-    const SQLSnippet: SQL_SNIPPET = { TABLE: "`grammar`", SELECT: ["`id`", "`name`", "`content`"], WHERE: ["(1=1)"], ORDER_BY: "`id` DESC", BIND_PARAMS: [] };
+    const SQLSnippet: SQL_SNIPPET = { TABLE: "`grammar`", SELECT: ["`id`", "`name`", "`content`"], WHERE: ["(1=1)"], ORDER_BY: "`sort` DESC, `id` DESC", BIND_PARAMS: [] };
 
-    if (orderType === "ASC") SQLSnippet.ORDER_BY = "`id` ASC";
+    if (orderType === "ASC") SQLSnippet.ORDER_BY = "`sort` DESC, `id` ASC";
     if (keyword) SQLSnippet.WHERE?.push(` AND (\`name\` LIKE concat('%',?,'%') OR \`content\` LIKE concat('%',?,'%'))`);
     if (keyword) SQLSnippet.BIND_PARAMS?.push(keyword, keyword);
 

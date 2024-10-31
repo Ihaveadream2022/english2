@@ -3,7 +3,7 @@ import { Table, Input, Button, Modal, Form, Space, Row, Col, message, Popconfirm
 import type { PaginationProps, GetProps, InputRef } from "antd";
 import { itemList, itemAdd, itemEdit, itemDelete, ttsGen } from "../../api/request";
 import "./index.scss";
-import { PlusCircleOutlined, PlayCircleOutlined, QuestionCircleOutlined, EditOutlined, DeleteOutlined, SearchOutlined, LoadingOutlined } from "@ant-design/icons";
+import { PlusCircleOutlined, PlayCircleOutlined, QuestionCircleOutlined, EditOutlined, DeleteOutlined, SearchOutlined, LoadingOutlined, CustomerServiceOutlined } from "@ant-design/icons";
 import { RequestItemParams, RequestItemData, RequestItemDataDelete, PlayLoopAudio } from "../../types";
 const { Column } = Table;
 const { Search } = Input;
@@ -18,9 +18,14 @@ function Item() {
     const [dataTableCurrentRow, setDataTableCurrentRow] = useState<RequestItemData>();
     const [audioLoopPlay, setAudioLoopPlay] = useState<boolean>(false);
     const [audioLoopPlayIndex, setAudioLoopPlayIndex] = useState<number>(0);
+    const [audioDynamicPlay, setAudioDynamicPlay] = useState<boolean>(false);
+    const [audioDynamicPlayType, setAudioDynamicPlayType] = useState<number>(1);
+    const [textWord, setTextWord] = useState<string>("");
     const refInputPaste = useRef<InputRef>(null);
     const refAudio = useRef<HTMLAudioElement>(null);
     const refAudioLoop = useRef<HTMLAudioElement>(null);
+    const refAudioDynamic = useRef<HTMLAudioElement>(null);
+    const refText = useRef<InputRef>(null);
     const [messageApi, contextHolder] = message.useMessage();
     const [form] = Form.useForm();
     const getTableList = async (queryParams: RequestItemParams) => {
@@ -42,11 +47,68 @@ function Item() {
     };
     // 包括翻页和每页数变化
     const onChangePage: PaginationProps["onChange"] = (current, pageSize) => {
+        console.log("dataQueryParams:", dataQueryParams);
         setStoping();
-        getTableList({ pageNo: current, pageSize: pageSize });
+        dynamicStop();
+        getTableList({ ...dataQueryParams, pageNo: current, pageSize: pageSize });
     };
     const onSearch: SearchProps["onSearch"] = (value) => {
         getTableList({ ...dataQueryParams, pageNo: 1, pageSize: 10, keyword: `${value}` });
+    };
+    const clearTableTdStyle = () => {
+        const rows = document.querySelectorAll(`.ant-table-row`);
+        rows.forEach((element) => {
+            (element as HTMLElement).style.cssText = "";
+        });
+    };
+    const onText: SearchProps["onSearch"] = async (value) => {
+        console.log("valuie", value);
+        const color = getRandomRGBColor();
+        const input = value.split("+");
+        const audio = refAudioDynamic.current;
+        if (audioDynamicPlayType === 2) {
+            if (audio?.getAttribute("data-en") === input[0]) {
+                const elem = document.querySelector(`[data-row-key="${input[0]}"]`) as HTMLElement;
+                elem.style.background = color;
+                elem.style.color = "#fff";
+                setTextWord("");
+                const index = dataTableList.findIndex((v) => {
+                    return v.name === input[0];
+                });
+                const next = dataTableList[index + 1];
+                if (next) {
+                    dynamicPlay(next, audioDynamicPlayType);
+                } else {
+                    dynamicStop();
+                }
+            }
+        }
+        if (audioDynamicPlayType === 1) {
+            if (audio?.getAttribute("data-en") === input[0]) {
+                if (input[1]) {
+                    const res = await itemList({ byCommon: 1, keyword: `${input[1]}` });
+                    for (let item of res.data.list) {
+                        if (item.common === audio?.getAttribute("data-cn")) {
+                            const search = document.querySelector(`[data-row-key="${input[0]}"]`) as HTMLElement;
+                            const htmlElem = search as HTMLElement;
+                            htmlElem.style.background = color;
+                            htmlElem.style.color = "#fff";
+                            setTextWord("");
+                            const index = dataTableList.findIndex((v) => {
+                                return v.common === item.common;
+                            });
+                            const next = dataTableList[index + 1];
+                            if (next) {
+                                dynamicPlay(next, audioDynamicPlayType);
+                            } else {
+                                dynamicStop();
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     };
     const onClickAdd = () => {
         setAddDialogVisible(true);
@@ -60,23 +122,23 @@ function Item() {
     const onOkAddDialog = () => {
         form.validateFields()
             .then((fields) => {
+                console.log("fields::", fields);
                 messageApi.open({ type: "loading", content: "Loading..", duration: 0 });
-                const data: RequestItemData = { name: `${fields.name}` };
-                if (fields.id) data.id = fields.id;
-                if (fields.common) data.common = `${fields.common}`;
-                if (fields.pronounce) data.pronounce = `${fields.pronounce}`;
-                if (fields.noun) data.noun = `${fields.noun}`;
-                if (fields.noun_plural) data.noun_plural = `${fields.noun_plural}`;
-                if (fields.verb) data.verb = `${fields.verb}`;
-                if (fields.verb_past_tense) data.verb_past_tense = `${fields.verb_past_tense}`;
-                if (fields.verb_past_participle) data.verb_past_participle = `${fields.verb_past_participle}`;
-                if (fields.verb_third_person_singular) data.verb_third_person_singular = `${fields.verb_third_person_singular}`;
-                if (fields.verb_present_participle) data.verb_present_participle = `${fields.verb_present_participle}`;
-                if (fields.adjective) data.adjective = `${fields.adjective}`;
-                if (fields.adverb) data.adverb = `${fields.adverb}`;
-                if (fields.conjunction) data.conjunction = `${fields.conjunction}`;
-                if (fields.preposition) data.preposition = `${fields.preposition}`;
-                if (fields.comment) data.comment = `${fields.comment}`;
+                const data: RequestItemData = { name: `${fields.name}`, common: `${fields.common}` };
+                data.id = fields.id;
+                data.pronounce = !fields.pronounce ? `` : `${fields.pronounce}`;
+                data.noun = !fields.noun ? `` : `${fields.noun}`;
+                data.noun_plural = !fields.noun_plural ? `` : `${fields.noun_plural}`;
+                data.verb = !fields.verb ? `` : `${fields.verb}`;
+                data.verb_past_tense = !fields.verb_past_tense ? `` : `${fields.verb_past_tense}`;
+                data.verb_past_participle = !fields.verb_past_participle ? `` : `${fields.verb_past_participle}`;
+                data.verb_third_person_singular = !fields.verb_third_person_singular ? `` : `${fields.verb_third_person_singular}`;
+                data.verb_present_participle = !fields.verb_present_participle ? `` : `${fields.verb_present_participle}`;
+                data.adjective = !fields.adjective ? `` : `${fields.adjective}`;
+                data.adverb = !fields.adverb ? `` : `${fields.adverb}`;
+                data.conjunction = !fields.conjunction ? `` : `${fields.conjunction}`;
+                data.preposition = !fields.preposition ? `` : `${fields.preposition}`;
+                data.comment = !fields.comment ? `` : `${fields.comment}`;
                 const promise = titleDialog === "Add Item" ? itemAdd(data) : itemEdit(data);
                 promise
                     .then(
@@ -101,7 +163,7 @@ function Item() {
                                 messageApi.destroy();
                                 messageApi.open({ type: "error", duration: 2, content: error.message });
                             }
-                        },
+                        }
                     )
                     .catch((error) => {
                         if (error instanceof Error) {
@@ -149,13 +211,22 @@ function Item() {
     };
     const onPlay = async (row: RequestItemData) => {
         try {
-            const res = await ttsGen({ content: getName(row.name, row).replace(/ \//g, ","), type: 1 });
-            if (res.code) {
+            if (row.sound) {
                 if (refAudio.current) {
                     const audio = refAudio.current;
-                    audio.src = "data:audio/wav;base64," + res.data;
+                    audio.src = "data:audio/wav;base64," + row.sound;
                     audio.load();
                     audio.play();
+                }
+            } else {
+                const res = await ttsGen({ content: getName(row.name, row).replace(/ \//g, ","), type: 1 });
+                if (res.code) {
+                    if (refAudio.current) {
+                        const audio = refAudio.current;
+                        audio.src = "data:audio/wav;base64," + res.data;
+                        audio.load();
+                        audio.play();
+                    }
                 }
             }
         } catch (error) {
@@ -165,7 +236,7 @@ function Item() {
         }
     };
     const getRowClassName = (record: RequestItemData) => {
-        return dataTableCurrentRow !== undefined && record.id === dataTableCurrentRow.id ? "clicked" : "";
+        return dataTableCurrentRow !== undefined && record.id === dataTableCurrentRow.id ? `${record.common} clicked` : record.common;
     };
     const onChangeOrder = (value: string) => {
         getTableList({ ...dataQueryParams, orderType: `${value}` });
@@ -257,25 +328,101 @@ function Item() {
         setAudioLoopPlayIndex((valueOld) => {
             const valueNew = valueOld + 1;
             const content = getName(dataTableList[valueOld].name, dataTableList[valueOld]).replace(/ \//g, "");
-            ttsGen({ content: content, type: 1 }).then(
-                (res) => {
-                    setTimeout(() => {
-                        if (refAudioLoop.current && dataTableList.length > 0) {
-                            refAudioLoop.current.src = "data:audio/wav;base64," + res.data;
-                            refAudioLoop.current.load();
-                            refAudioLoop.current.play();
-                            if (valueNew >= dataTableList.length) {
-                                setAudioLoopPlayIndex(0);
-                            }
+            const sound = dataTableList[valueOld].sound;
+            if (sound) {
+                setTimeout(() => {
+                    if (refAudioLoop.current && dataTableList.length > 0) {
+                        refAudioLoop.current.src = "data:audio/wav;base64," + sound;
+                        refAudioLoop.current.load();
+                        refAudioLoop.current.play();
+                        if (valueNew >= dataTableList.length) {
+                            setAudioLoopPlayIndex(0);
                         }
-                    }, 2000);
-                },
-                (err) => {},
-            );
+                    }
+                }, 2000);
+            } else {
+                ttsGen({ content: content, type: 1 }).then(
+                    (res) => {
+                        setTimeout(() => {
+                            if (refAudioLoop.current && dataTableList.length > 0) {
+                                refAudioLoop.current.src = "data:audio/wav;base64," + res.data;
+                                refAudioLoop.current.load();
+                                refAudioLoop.current.play();
+                                if (valueNew >= dataTableList.length) {
+                                    setAudioLoopPlayIndex(0);
+                                }
+                            }
+                        }, 2000);
+                    },
+                    (err) => {}
+                );
+            }
             return valueNew;
         });
     }, [dataTableList]);
-
+    const dynamicPlay = async (row: RequestItemData, type: number) => {
+        try {
+            if (row.sound) {
+                if (refAudioDynamic.current) {
+                    const audio = refAudioDynamic.current;
+                    audio.src = "data:audio/wav;base64," + row.sound;
+                    audio.setAttribute("data-en", row.name);
+                    audio.setAttribute("data-cn", row.common);
+                    audio.load();
+                    audio.play();
+                }
+            } else {
+                const res = await ttsGen({ content: type === 1 ? row.name : row.common, type: type });
+                if (res.code) {
+                    if (refAudioDynamic.current) {
+                        const audio = refAudioDynamic.current;
+                        audio.src = "data:audio/wav;base64," + res.data;
+                        audio.setAttribute("data-en", row.name);
+                        audio.setAttribute("data-cn", row.common);
+                        audio.load();
+                        audio.play();
+                    }
+                }
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                console.log(error);
+            }
+        }
+    };
+    const dynamicStop = () => {
+        if (refAudioDynamic.current) {
+            refAudioDynamic.current.pause();
+            setAudioDynamicPlay(false);
+        }
+    };
+    const onChangeDynamicPlayType = (value: number) => {
+        setAudioDynamicPlayType(value);
+    };
+    const onClickDynamicPlay = async () => {
+        clearTableTdStyle();
+        setAudioDynamicPlay((valueOld) => {
+            const valueNew = !valueOld;
+            if (refAudioDynamic.current) {
+                if (valueOld === false) {
+                    dynamicPlay(dataTableList[0], audioDynamicPlayType);
+                }
+                if (valueOld === true) {
+                    refAudioDynamic.current.pause();
+                }
+            }
+            return valueNew;
+        });
+    };
+    const onChangeText = (target: HTMLInputElement) => {
+        setTextWord(target.value);
+    };
+    const getRandomRGBColor = () => {
+        var r = Math.floor(Math.random() * 256);
+        var g = Math.floor(Math.random() * 256);
+        var b = Math.floor(Math.random() * 256);
+        return "rgb(" + r + "," + g + "," + b + ")";
+    };
     useEffect(() => {
         getTableList(dataQueryParams);
     }, []); // eslint-disable-line
@@ -301,10 +448,16 @@ function Item() {
                     <Select defaultValue="DESC" onChange={onChangeOrder} options={[{ value: "DESC", label: "DESC" },{ value: "ASC", label: "ASC" }]} style={{width: 80}} />
                     {/* prettier-ignore */}
                     <Search placeholder="input search text" allowClear suffix={<SearchOutlined />} enterButton="Search" onSearch={onSearch} style={{width: 230}} />
+                    {/* prettier-ignore */}
+                    <Search ref={refText} placeholder="" allowClear enterButton="Write Following Audio" onSearch={onText} style={{width: 380}} value={textWord} onChange={(e) => onChangeText(e.target)} />
+                    {/* prettier-ignore */}
+                    <Select defaultValue={1} onChange={onChangeDynamicPlayType} options={[{ value: 1, label: "EN" },{ value: 2, label: "CN" }]} style={{width: 70}} />
+                    {/* prettier-ignore */}
+                    <Button onClick={onClickDynamicPlay}>{audioDynamicPlay ? <LoadingOutlined /> : <CustomerServiceOutlined />}</Button>
                 </Space>
             </Row>
             {/* prettier-ignore */}
-            <Table bordered dataSource={dataTableList} rowKey={"id"} scroll={{ y: 620 }} loading={dataTableLoading} rowClassName={getRowClassName}
+            <Table bordered dataSource={dataTableList} rowKey={"name"} scroll={{ y: 620 }} loading={dataTableLoading} rowClassName={getRowClassName}
                 onRow={(record) => {
                     return {
                         onClick: (event) => { onClickRow(record); },
@@ -339,6 +492,9 @@ function Item() {
                             <Form.Item name="id" hidden>
                                 <Input />
                             </Form.Item>
+                            <Form.Item name="sound" hidden>
+                                <Input />
+                            </Form.Item>
                             <Form.Item name="name" rules={[{ required: true, message: "Please input word name" }]}>
                                 <Input size="middle" placeholder="单词" />
                             </Form.Item>
@@ -349,7 +505,7 @@ function Item() {
                             </Form.Item>
                         </Col>
                         <Col span={8}>
-                            <Form.Item name="common">
+                            <Form.Item name="common" rules={[{ required: true, message: "Please input word common" }]}>
                                 <Input size="middle" placeholder="常见含义" suffix="常见含义" />
                             </Form.Item>
                         </Col>
@@ -444,6 +600,7 @@ function Item() {
             <div style={{ display: "none" }}>
                 <audio ref={refAudio}></audio>
                 <audio ref={refAudioLoop}></audio>
+                <audio ref={refAudioDynamic} loop></audio>
             </div>
         </div>
     );

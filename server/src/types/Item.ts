@@ -13,6 +13,7 @@ interface TypeCount extends RowDataPacket {
 
 interface TypeEntity extends RowDataPacket {
     id: number;
+    tts_id: number;
     name: string;
     pronounce: string;
     common: string;

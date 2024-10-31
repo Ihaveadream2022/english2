@@ -15,11 +15,12 @@ import debounce from "lodash.debounce";
 
 interface props {
     content: string;
-    onChange: (content: string) => void;
+    toolbar?: boolean;
+    onChange?: (content: string) => void;
     onSelect?: (content: string) => void;
 }
 const extensions = [StarterKit, Bold, Italic, Underline, HorizontalRule, Color, Paragraph, TextStyle];
-const Tiptap: React.FC<props> = ({ content, onChange, onSelect }) => {
+const Tiptap: React.FC<props> = ({ content, toolbar, onChange, onSelect }) => {
     const refPanel = useRef<HTMLDivElement>(null);
     const editor = useEditor({
         extensions,
@@ -97,24 +98,26 @@ const Tiptap: React.FC<props> = ({ content, onChange, onSelect }) => {
 
     return (
         <div>
-            <Row>
-                <Space ref={refPanel} className="panel" style={{ marginBottom: "10px" }}>
-                    {/* prettier-ignore */}
-                    <Button onClick={() => { editor?.chain().focus().toggleBold().run() }}><BoldOutlined />Bold</Button>
-                    {/* prettier-ignore */}
-                    <Button onClick={() => { editor?.chain().focus().toggleItalic().run() }}><ItalicOutlined />Italic</Button>
-                    {/* prettier-ignore */}
-                    <Button onClick={() => { editor?.chain().focus().toggleUnderline().run() }}><UnderlineOutlined />Underline</Button>
-                    {/* prettier-ignore */}
-                    <Button onClick={() => { editor?.chain().focus().setHorizontalRule().run() }}><DashOutlined />Horizontal</Button>
-                    {/* prettier-ignore */}
-                    <Button onClick={setColorRed}><BgColorsOutlined style={{color: "#F98181"}} />Red</Button>
-                    {/* prettier-ignore */}
-                    <Button onClick={setColorBlue}><BgColorsOutlined style={{color: "#70CFF8"}} />Blue</Button>
-                    {/* prettier-ignore */}
-                    <Button onClick={clearStyle}><ClearOutlined />Clear</Button>
-                </Space>
-            </Row>
+            {toolbar && (
+                <Row>
+                    <Space ref={refPanel} className="panel" style={{ marginBottom: "10px" }}>
+                        {/* prettier-ignore */}
+                        <Button onClick={() => { editor?.chain().focus().toggleBold().run() }}><BoldOutlined />Bold</Button>
+                        {/* prettier-ignore */}
+                        <Button onClick={() => { editor?.chain().focus().toggleItalic().run() }}><ItalicOutlined />Italic</Button>
+                        {/* prettier-ignore */}
+                        <Button onClick={() => { editor?.chain().focus().toggleUnderline().run() }}><UnderlineOutlined />Underline</Button>
+                        {/* prettier-ignore */}
+                        <Button onClick={() => { editor?.chain().focus().setHorizontalRule().run() }}><DashOutlined />Horizontal</Button>
+                        {/* prettier-ignore */}
+                        <Button onClick={setColorRed}><BgColorsOutlined style={{color: "#F98181"}} />Red</Button>
+                        {/* prettier-ignore */}
+                        <Button onClick={setColorBlue}><BgColorsOutlined style={{color: "#70CFF8"}} />Blue</Button>
+                        {/* prettier-ignore */}
+                        <Button onClick={clearStyle}><ClearOutlined />Clear</Button>
+                    </Space>
+                </Row>
+            )}
             <Row>
                 <EditorContent editor={editor} style={{ width: "100%" }} />
             </Row>

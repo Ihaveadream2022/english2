@@ -1,9 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { ServiceError } from "../exception/CustomError";
 import { generateAudio } from "../service/Tts";
+import { findByID } from "../service/Item";
 
 const conGenerate = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        const id = Number(req.query.id);
         const type = Number(req.query.type);
         if (isNaN(type)) {
             throw new ServiceError("Invalid type parameter");
@@ -15,11 +17,18 @@ const conGenerate = async (req: Request, res: Response, next: NextFunction) => {
         if (typeof content !== "string") {
             throw new ServiceError("Content is required");
         }
-        const audio: string = await generateAudio(content, type);
+        let sound: string | null = null;
+        if (id) {
+            const [one] = await findByID(id);
+            sound = one[0].sound;
+        }
+        if (!sound) {
+            sound = await generateAudio(content, type);
+        }
         res.json({
             code: 1,
             message: "success",
-            data: audio,
+            data: sound,
         });
     } catch (error) {
         next(error);
