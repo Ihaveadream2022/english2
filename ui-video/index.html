@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>video</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                text-align: center;
+            }
+            video {
+                width: 80%;
+                max-width: 600px;
+            }
+            #subtitle-input {
+                margin-top: 20px;
+                padding: 10px;
+                font-size: 16px;
+                width: 80%;
+                max-width: 600px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>通过字幕控制视频播放</h1>
+
+        <!-- 视频播放器 -->
+        <video id="video" controls>
+            <source src="Elon.mp4" type="video/mp4" />
+            您的浏览器不支持 video 标签。
+        </video>
+
+        <p><button onclick="to(0)">1-That kid. Oh.</button></p>
+        <p><button onclick="to(1)">2-Hey what are you doing?</button></p>
+        <p><button onclick="to(2)">3-Do you want to just sit on my knee or something?</button></p>
+        <p><button onclick="to(3)">4-OK I guess so. All right. We got mini me here.</button></p>
+        <!-- 用户输入字幕 -->
+        <input id="subtitle-input" type="text" placeholder="请输入字幕" />
+
+        <script>
+            const to = (index) => {
+                currentSubtitleIndex = index;
+                video.currentTime = subtitles[index].start;
+                console.log("111play");
+                video.play();
+                console.log(222);
+            };
+            // 获取视频和输入框元素
+            const video = document.getElementById("video");
+            const subtitleInput = document.getElementById("subtitle-input");
+
+            // 定义字幕内容 time 为字幕朗读结束时间
+            const subtitles = [
+                { start: 0, end: 2.5, text: "That kid. Oh." },
+                { start: 2.8, end: 5.5, text: "Hey what are you doing?" },
+                { start: 8.0, end: 10.5, text: "Do you want to just sit on my knee or something?" },
+                { start: 11.0, end: 15.0, text: "OK I guess so. All right. We got mini me here." },
+            ];
+            function findPosition(arr, target) {
+                let low = 0;
+                let high = arr.length - 1;
+
+                // 二分查找
+                while (low <= high) {
+                    const mid = Math.floor((low + high) / 2);
+                    console.log("mid", mid);
+                    if (arr[mid].start <= target) {
+                        if (mid === arr.length - 1 || arr[mid + 1].start > target) {
+                            return mid; // 找到目标位置
+                        }
+                        low = mid + 1;
+                    } else {
+                        high = mid - 1;
+                    }
+                }
+
+                // 如果 target 小于数组中最小值，返回 0（第一个元素的位置）
+                return 0;
+            }
+
+            let currentSubtitleIndex = 0; // 当前字幕索引
+
+            // 控制视频播放
+            video.addEventListener("timeupdate", function () {
+                console.log("currentSubtitleIndex", currentSubtitleIndex);
+                // console.log("video.currentTime", video.currentTime);
+                // console.log("currentSubtitleIndex", currentSubtitleIndex);
+                // 检查当前视频时间是否达到字幕的显示时间
+                if (currentSubtitleIndex < subtitles.length && video.currentTime >= subtitles[currentSubtitleIndex].end) {
+                    // 显示当前字幕并暂停视频
+                    // subtitleInput.value = ""; // 清空输入框
+                    // subtitleInput.focus(); // 聚焦输入框
+                    video.pause(); // 暂停视频
+                    //video.currentTime = subtitles[currentSubtitleIndex].end;
+                }
+            });
+
+            // 监听用户输入
+            subtitleInput.addEventListener("input", function () {
+                const currentSubtitle = subtitles[currentSubtitleIndex];
+                // console.log("currentSubtitle.text: ", currentSubtitle.text);
+                // console.log("subtitleInput.value: ", subtitleInput.value);
+                // 如果用户输入的内容与当前字幕匹配
+                if (subtitleInput.value === currentSubtitle.text) {
+                    // 正确输入，继续播放视频
+                    subtitleInput.value = ""; // 清空输入框
+                    video.play();
+                    currentSubtitleIndex++; // 跳到下一条字幕
+                }
+            });
+            let isSeeking = false; // 标志变量
+            video.addEventListener("seeked", () => {
+                // if (isSeeking) {
+                //     // 如果是由我们手动调整触发的，直接返回
+                //     isSeeking = false;
+                //     return;
+                // }
+                // isSeeking = true;
+                // console.log("video.currentTime", video.currentTime);
+                // const currentTime = video.currentTime;
+                // currentSubtitleIndex = findPosition(subtitles, currentTime);
+                // console.log("currentSubtitleIndex", currentSubtitleIndex);
+                // video.currentTime = subtitles[currentSubtitleIndex].start;
+                // console.log("subtitles[currentSubtitleIndex].start", subtitles[currentSubtitleIndex].start);
+                // // console.log("subtitles", subtitles);
+                // console.log("currentTime", currentTime);
+                // console.log("currentSubtitleIndex", currentSubtitleIndex);
+                // video.play();
+                // if (subtitleIndex !== -1) {
+                //     console.log(`Subtitle: "${subtitles[subtitleIndex].text}" (Index: ${subtitleIndex}, Time: ${subtitles[subtitleIndex].time}s)`);
+                // } else {
+                //     console.log("No subtitle found for the current time.");
+                // }
+            });
+            // 视频播放完毕后的处理
+            video.addEventListener("ended", function () {
+                currentSubtitleIndex = 0;
+                video.play();
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,29 @@
+
+
+
+
+
+
+【限定词 determiner】： 
+
+	【含义】： 词性与形容词相同，但它用于限定名词的范围，而不是单纯描述性质
+	
+	【种类】：
+		
+		-冠词: the, a, an 
+			The book on the table is mine.
+			
+		-数量词： one, first, many, some, any, every
+			Some students are absent today.
+		
+		-所属关系词： my, your, his, her, its, our, their
+			This is my house.
+			
+		-指示代词： this, that, these, those
+			This car is new.
+			
+		-疑问代词： which, what, whose
+			Which color do you prefer?
+			
+		-否定： no(无) neighter
+			No students were late.

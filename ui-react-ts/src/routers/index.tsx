@@ -7,6 +7,7 @@ import Home from "../views/home";
 import Item from "../views/item";
 import Essay from "../views/essay";
 import Grammar from "../views/grammar";
+import Video from "../views/public/Video";
 
 const routes = [
     {
@@ -46,6 +47,10 @@ const routes = [
     {
         path: "/login",
         element: <Login />,
+    },
+    {
+        path: "/video",
+        element: <Video />,
     },
 ];
 
