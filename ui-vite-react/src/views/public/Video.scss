@@ -1,0 +1,16 @@
+.ant-layout {
+    .main {
+        flex: 0 0 60% !important;
+        max-width: none !important;
+        min-width: 720px !important;
+        width: 60% !important;
+        background-color: green;
+    }
+    .sider {
+        flex: 0 0 40% !important;
+        max-width: none !important;
+        min-width: 480px !important;
+        width: 40% !important;
+        background-color: purple;
+    }
+}
