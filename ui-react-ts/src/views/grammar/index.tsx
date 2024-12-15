@@ -62,37 +62,37 @@ const Grammar: React.FC = () => {
                 if (fields.id) data.id = fields.id;
                 if (fields.sort) data.sort = fields.sort;
                 const promise = titleDialog === "Add Grammar" ? grammarAdd(data) : grammarEdit(data);
-                promise
-                    .then(
-                        (res) => {
-                            if (res.code) {
-                                messageApi.destroy();
-                                messageApi.open({
-                                    type: "success",
-                                    content: "Success.",
-                                    duration: 2,
-                                    onClose: () => {
-                                        setAddDialogVisible(false);
-                                        setTitleDialog("Add Grammar");
-                                        form.resetFields();
-                                        getTableList(dataQueryParams);
-                                    },
-                                });
-                            }
-                        },
-                        (error) => {
-                            if (error instanceof Error) {
-                                messageApi.destroy();
-                                messageApi.open({ type: "error", duration: 2, content: error.message });
-                            }
+                // prettier-ignore
+                promise.then(
+                    (res) => {
+                        if (res.code) {
+                            messageApi.destroy();
+                            messageApi.open({
+                                type: "success",
+                                content: "Success.",
+                                duration: 1,
+                                onClose: () => {
+                                    form.resetFields();
+                                    setDataEditorContent("");
+                                    setAddDialogVisible(false);
+                                    setTitleDialog("Add Grammar");
+                                    getTableList(dataQueryParams);
+                                },
+                            });
                         }
-                    )
-                    .catch((error) => {
+                    },
+                    (error) => {
                         if (error instanceof Error) {
                             messageApi.destroy();
                             messageApi.open({ type: "error", duration: 2, content: error.message });
                         }
-                    });
+                    }
+                ).catch((error) => {
+                    if (error instanceof Error) {
+                        messageApi.destroy();
+                        messageApi.open({ type: "error", duration: 2, content: error.message });
+                    }
+                });
             })
             .catch((error) => {
                 console.log(error);
@@ -177,7 +177,7 @@ const Grammar: React.FC = () => {
                     )}
                 />
             </Table>
-            <Modal title={<div style={{ marginBottom: "20px" }}>{titleDialog}</div>} open={AddDialogVisible} onOk={onOkAddDialog} onCancel={onCancelAddDialog} width={1600} style={{ top: 0 }}>
+            <Modal maskClosable={false} title={<div style={{ marginBottom: "20px" }}>{titleDialog}</div>} open={AddDialogVisible} onOk={onOkAddDialog} onCancel={onCancelAddDialog} width={1600} style={{ top: 0 }}>
                 <Form form={form} autoComplete="off" style={{ fontSize: "12px" }}>
                     <Row>
                         <Col span={24}>

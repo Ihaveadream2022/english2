@@ -1,16 +1,14 @@
 .ant-layout {
-    .main {
-        flex: 0 0 60% !important;
-        max-width: none !important;
-        min-width: 720px !important;
-        width: 60% !important;
-        background-color: green;
+    .ant-list-header {
+        padding-inline: 12px;
     }
-    .sider {
-        flex: 0 0 40% !important;
-        max-width: none !important;
-        min-width: 480px !important;
-        width: 40% !important;
-        background-color: purple;
+    .ant-list-item {
+        padding-inline: 12px;
+        &.current-item {
+            background-color: green;
+        }
+    }
+    .ant-list-footer {
+        padding-inline: 12px;
     }
 }

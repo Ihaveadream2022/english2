@@ -5,6 +5,7 @@ import Role from "../views/auth/Role.js";
 import Login from "../views/public/Login.js";
 import Home from "../views/home";
 import Item from "../views/item";
+import Video from "../views/public/Video.js";
 
 const routes = [
     {
@@ -37,6 +38,10 @@ const routes = [
     {
         path: "/login",
         element: <Login />,
+    },
+    {
+        path: "/video",
+        element: <Video />,
     },
 ];
 
