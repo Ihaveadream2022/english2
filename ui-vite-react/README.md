@@ -1,8 +1,5 @@
-# React + Vite
+# Functionality
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+-. 字幕导入和编辑（开始和结束时间，内容）
+-. 视频播放时，会在每段字幕结束时间自动暂停，输入正确字幕继续播放
+-. 视频播放进度与左侧字幕滚动区同步，包括滚动到当前字幕，当前字幕高亮，显示整体进度，拖动视频播放进度条字幕区位置自动更新

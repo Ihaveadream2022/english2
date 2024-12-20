@@ -1,14 +1,34 @@
 .ant-layout {
     .ant-list-header {
-        padding-inline: 12px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding-inline: 0;
+        padding-block: 0;
+        height: 43px;
+        width: 600px;
+        padding: 8px 12px;
+        box-sizing: border-box;
+        background: red;
+        overflow: hidden;
+        z-index: 999;
     }
-    .ant-list-item {
-        padding-inline: 12px;
-        &.current-item {
-            background-color: green;
+    .ant-spin-nested-loading {
+        margin-top: 43px;
+        .ant-list-item {
+            padding-inline: 12px;
+            &.current-item {
+                background-color: green;
+            }
         }
     }
+
     .ant-list-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
         padding-inline: 12px;
+        height: 50px;
+        width: 600px;
     }
 }
