@@ -5,19 +5,13 @@ import { Scrollbars } from "react-custom-scrollbars-2";
 const { TextArea } = Input;
 const { Sider, Content } = Layout;
 const Video = () => {
-    const [currentSubtitle, setCurrentSubtitle] = useState(0);
+    const [subIndex, setSubIndex] = useState(0);
     const [title, setTitle] = useState("Elon Musk's little son.");
     const [subtitle, setSubtitle] = useState([
         { startTime: "00:00:00", endTime: "00:00:02,500", text: "That kid. Oh." },
         { startTime: "00:02:80", endTime: "00:00:05,500", text: "Hey what are you doing?" },
         { startTime: "00:08:00", endTime: "00:00:10,500", text: "Do you want to just sit on my knee or something?" },
         { startTime: "00:11:00", endTime: "00:00:15,000", text: "OK I guess so. All right. We got mini me here." },
-
-        { startTime: "00:15:00", endTime: "00:00:20,000", text: "OK I guess so. All right. We got mini me here." },
-        { startTime: "00:20:00", endTime: "00:00:30,000", text: "OK I guess so. All right. We got mini me here." },
-        { startTime: "00:30:00", endTime: "00:00:40,000", text: "OK I guess so. All right. We got mini me here." },
-        { startTime: "00:40:00", endTime: "00:00:50,000", text: "OK I guess so. All right. We got mini me here." },
-        { startTime: "00:11:00", endTime: "00:00:55,000", text: "OK I guess so. All right. We got mini me here." },
     ]);
     const refLis = useRef<(HTMLDivElement | null)[]>([]);
     const refScrollbar = useRef<Scrollbars>(null);
@@ -69,41 +63,35 @@ const Video = () => {
         console.log(subtitle);
     };
     const handleTimeUpdate = (e: any) => {
-        console.log("currentSubtitle: ", currentSubtitle);
+        console.log("subIndex: ", subIndex);
         console.log("currentTime:", e.target.currentTime);
-        if (currentSubtitle < subtitle.length) {
-            const endTimeArr = subtitle[currentSubtitle].endTime.split(":");
-            const endTime = parseFloat(endTimeArr[2].replace(/,/g, "."));
-            if (e.target.currentTime >= endTime) {
+        if (subtitle[subIndex] !== undefined) {
+            const endTimeArr = subtitle[subIndex].endTime.split(":");
+            const endTimeFloat = parseFloat(endTimeArr[2].replace(/,/g, "."));
+            if (e.target.currentTime >= endTimeFloat) {
                 refVideo.current?.pause();
-                console.log("refVideo paused");
             }
         }
     };
     const handleEnded = () => {};
     const handlePause = () => {};
     const handleInputSubtitle = (e: any) => {
-        console.log("currentSubtitle", currentSubtitle);
+        console.log("subIndex", subIndex);
         console.log("refli", refLis.current);
-        console.log(refLis.current[currentSubtitle]);
-        if (subtitle[currentSubtitle].text === e.target.value) {
-            if (currentSubtitle >= 1) {
-                if (refLis.current[currentSubtitle]) {
-                    const { width, height } = refLis.current[currentSubtitle].getBoundingClientRect();
-                    console.log(`Item ${currentSubtitle}: width=${width}, height=${height}`);
-                    if (refScrollbar.current) {
-                        // 获取当前滚动的位置，并向下滚动 100 像素
-                        const currentScrollTop = refScrollbar.current.getScrollTop();
-                        refScrollbar.current.scrollTop(currentScrollTop + height);
-                    }
+        console.log(refLis.current[subIndex]);
+        setSubtitleInput(e.target.value);
+        if (subtitle[subIndex].text === e.target.value) {
+            setSubtitleInput("");
+            setSubIndex(subIndex + 1);
+            refVideo.current?.play();
+            if (subIndex >= 1) {
+                if (refScrollbar.current && refLis.current[subIndex]) {
+                    const currentScrollTop = refScrollbar.current.getScrollTop();
+                    const { width, height } = refLis.current[subIndex].getBoundingClientRect();
+                    console.log(`Item ${subIndex}: width=${width}, height=${height}`);
+                    refScrollbar.current.scrollTop(currentScrollTop + height);
                 }
             }
-
-            setSubtitleInput("");
-            setCurrentSubtitle(currentSubtitle + 1);
-            refVideo.current?.play();
-        } else {
-            setSubtitleInput(e.target.value);
         }
     };
     return (
