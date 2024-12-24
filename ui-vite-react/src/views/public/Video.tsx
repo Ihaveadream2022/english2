@@ -47,9 +47,7 @@ const Video = () => {
         window.URL.revokeObjectURL(a.href);
         window.document.body.removeChild(a);
     };
-    const importSRT = () => {
-
-    }
+    const importSRT = () => {};
     const handleChangeStartTime = (event: any, index: number) => {
         const newSubtitle = subtitle.map((v, k, a) => {
             if (k === index) {
@@ -138,12 +136,12 @@ const Video = () => {
     };
     return (
         <Layout style={{ minWidth: "1200px", height: "100%" }}>
-            <Sider width={600} style={{ flex: "0 0 600px", position: "fixed", width: "600px", height: "100%", backgroundColor: "#fff" }}>
+            <Sider width={600} style={{ flex: "0 0 600px", position: "fixed", width: "600px", height: "100%", backgroundColor: "#202024" }}>
                 <Scrollbars ref={refScrollbar} style={{ width: "600px", height: "100%" }}>
                     <List
                         header={
-                            <div style={{ height: "26px", overflow: "hidden", lineHeight: "26px", fontWeight: "bold", fontSize: "16px" }}>
-                                {title}|
+                            <div style={{ color: "#fff", height: "26px", overflow: "hidden", lineHeight: "26px", fontWeight: "bold", fontSize: "16px" }}>
+                                {title}
                                 <Button color="default" variant="solid" onClick={exportSRT}>
                                     Download
                                 </Button>
@@ -152,15 +150,15 @@ const Video = () => {
                                 </Button>
                             </div>
                         }
-                        footer={<TextArea style={{ borderRadius: "0" }} value={subtitleInput} onChange={(e) => handleInputSubtitle(e)} rows={2} />}
+                        footer={<TextArea style={{ borderRadius: "0", margin: "10px", resize: "none", backgroundColor: "transparent", color: "hsla(0,0%,100%,.6)" }} value={subtitleInput} onChange={(e) => handleInputSubtitle(e)} rows={2} />}
                         dataSource={subtitle}
                         renderItem={(item, index) => (
                             <List.Item ref={(el) => (refLis.current[index] = el)} style={{ alignItems: "flex-start" }} className={index === subIndex ? "current" : ""}>
                                 <Space size="small" style={{ flex: "0 0 94px" }} direction="vertical">
-                                    <Input defaultValue={item.startTime} size="small" style={{ borderRadius: "0" }} onChange={(e) => handleChangeStartTime(e, index)} />
-                                    <Input defaultValue={item.endTime} size="small" style={{ borderRadius: "0" }} onChange={(e) => handleChangeEndTime(e, index)} />
+                                    <Input defaultValue={item.startTime} size="small" style={{ borderRadius: "0", backgroundColor: "transparent", color: "hsla(0,0%,100%,.6)" }} onChange={(e) => handleChangeStartTime(e, index)} />
+                                    <Input defaultValue={item.endTime} size="small" style={{ borderRadius: "0", backgroundColor: "transparent", color: "hsla(0,0%,100%,.6)" }} onChange={(e) => handleChangeEndTime(e, index)} />
                                 </Space>
-                                <TextArea style={{ flex: 1, minHeight: "55px", marginLeft: "8px", borderRadius: "0" }} defaultValue={item.text} onChange={(e) => handleChangeText(e, index)} autoSize />
+                                <TextArea style={{ flex: 1, minHeight: "55px", marginLeft: "8px", borderRadius: "0", backgroundColor: "transparent", color: "hsla(0,0%,100%,.6)" }} defaultValue={item.text} onChange={(e) => handleChangeText(e, index)} autoSize />
                             </List.Item>
                         )}
                     />
