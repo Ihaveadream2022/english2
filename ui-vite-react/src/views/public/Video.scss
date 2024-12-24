@@ -15,9 +15,10 @@
     }
     .ant-spin-nested-loading {
         margin-top: 43px;
+        margin-bottom: 54px;
         .ant-list-item {
             padding-inline: 12px;
-            &.current-item {
+            &.current {
                 background-color: green;
             }
         }
@@ -27,8 +28,9 @@
         position: fixed;
         bottom: 0;
         left: 0;
-        padding-inline: 12px;
-        height: 50px;
+        padding: 0;
+        height: 54px;
         width: 600px;
+        box-sizing: border-box;
     }
 }
