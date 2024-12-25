@@ -191,27 +191,14 @@ const Video = () => {
     const fnPadZero = (num: number, length: number = 2): string => {
         return num.toString().padStart(length, "0");
     };
-    const onClickItem = (index: number) => {
-        mergeSub.unshift(index);
-        if (mergeSub.length > 2) {
-            setMergeSub(mergeSub.slice(0, 2));
+    const onDoubleClickItem = (index: number) => {
+        if (mergeSub.length === 1) {
+            mergeSub[1] = index;
+            setMergeSub(mergeSub);
+        } else {
+            mergeSub[0] = index;
+            setMergeSub(mergeSub);
         }
-    };
-    const handleMerge = () => {
-        const arrNew = subtitle.filter((v, k, a) => {
-            if (k !== mergeSub[1]) {
-                if (k === mergeSub[0]) {
-                    const next:Number = mergeSub[1];
-                    return {
-                        "startTime": v['startTime'],
-                        "endTime": a[next]['endTime'],
-                        "text": `${v['text']} ${v['text']}`,
-                    }
-                } else {
-                    return v;
-                }
-            }
-        });
     };
     const eventKeyDown = (event: KeyboardEvent) => {
         console.log("event.key", event.key);
@@ -262,7 +249,7 @@ const Video = () => {
                         footer={<TextArea style={{ borderRadius: "0", margin: "10px", resize: "none", backgroundColor: "transparent", color: "hsla(0,0%,100%,.6)" }} value={subtitleInput} onChange={(e) => handleInputSubtitle(e)} rows={2} />}
                         dataSource={subtitle}
                         renderItem={(item, index) => (
-                            <List.Item key={`${item.startTime}_${item.endTime}_${item.text}`} ref={(el) => (refLis.current[index] = el)} style={{ alignItems: "flex-start" }} className={index === subIndex ? "current" : ""} onClick={() => onClickItem(index)}>
+                            <List.Item key={`${item.startTime}_${item.endTime}_${item.text}`} ref={(el) => (refLis.current[index] = el)} style={{ alignItems: "flex-start" }} className={index === subIndex ? "current" : ""} onDoubleClick={() => onDoubleClickItem(index)}>
                                 <Space size="small" style={{ flex: "0 0 94px" }} direction="vertical">
                                     <Input defaultValue={item.startTime} size="small" style={{ borderRadius: "0", backgroundColor: "transparent", color: "hsla(0,0%,100%,.6)" }} onChange={(e) => handleChangeStartTime(e, index)} />
                                     <Input defaultValue={item.endTime} size="small" style={{ borderRadius: "0", backgroundColor: "transparent", color: "hsla(0,0%,100%,.6)" }} onChange={(e) => handleChangeEndTime(e, index)} />
