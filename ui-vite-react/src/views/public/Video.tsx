@@ -3,6 +3,7 @@ import { Layout, List, Input, Space, Button, Upload, Checkbox } from "antd";
 import "./Video.scss";
 import { Scrollbars } from "react-custom-scrollbars-2";
 import type { UploadProps } from "antd";
+import { DownloadOutlined, UploadOutlined, FastBackwardOutlined, PauseCircleOutlined, FastForwardOutlined, PlayCircleOutlined } from "@ant-design/icons";
 interface Subtitle {
     startTime: string;
     endTime: string;
@@ -19,33 +20,33 @@ const Video = () => {
     const [subtitleInput, setSubtitleInput] = useState("");
     const refVideo = useRef<HTMLVideoElement>(null);
     const [mergeSub, setMergeSub] = useState<Number[]>([]);
-    const props: UploadProps = {
-        beforeUpload: (file) => {
-            console.log("file:", file);
-            const reader = new FileReader();
-            reader.readAsText(file);
-            reader.onload = (e) => {
-                console.log("reader.onload's e:", e);
-                if (e.target?.result) {
-                    const content = e.target.result as string;
-                    console.log("content:", content);
-                    const subtitleArray: Subtitle[] = [];
-                    const subtitleBlocks = content.split("\n\n");
-                    subtitleBlocks.forEach((block) => {
-                        const lines = block.split("\n");
-                        if (lines.length >= 3) {
-                            const timeLine = lines[1];
-                            const [startTime, endTime] = timeLine.split(" --> ");
-                            const text = lines.slice(2).join(" "); // 多行字幕文本合并
-                            subtitleArray.push({ startTime, endTime, text });
-                        }
-                    });
-                    console.log("subtitleArray:", subtitleArray);
-                    setSubtitle(subtitleArray);
-                }
-            };
-            return false;
-        },
+    const [current, setCurrent] = useState("00:00:00,000");
+    const [playButton, setPlayButton] = useState(<PlayCircleOutlined />);
+    const beforeUpload = (file: any) => {
+        console.log("file:", file);
+        const reader = new FileReader();
+        reader.readAsText(file);
+        reader.onload = (e) => {
+            console.log("reader.onload's e:", e);
+            if (e.target?.result) {
+                const content = e.target.result as string;
+                console.log("content:", content);
+                const subtitleArray: Subtitle[] = [];
+                const subtitleBlocks = content.split("\n\n");
+                subtitleBlocks.forEach((block) => {
+                    const lines = block.split("\n");
+                    if (lines.length >= 3) {
+                        const timeLine = lines[1];
+                        const [startTime, endTime] = timeLine.split(" --> ");
+                        const text = lines.slice(2).join(" "); // 多行字幕文本合并
+                        subtitleArray.push({ startTime, endTime, text });
+                    }
+                });
+                console.log("subtitleArray:", subtitleArray);
+                setSubtitle(subtitleArray);
+            }
+        };
+        return false;
     };
     const fnConvertSrtTimeToSeconds = (timeString: string) => {
         const regex = /^(\d{2}):(\d{2}):(\d{2}),(\d{3})$/;
@@ -128,6 +129,7 @@ const Video = () => {
         console.log("subIndex: ", subIndex);
         console.log("video current time:", e.target.currentTime);
         console.log("video current time SRC:", fnFloatToSRTTime(e.target.currentTime));
+        setCurrent(fnFloatToSRTTime(e.target.currentTime));
     };
     const handleTimeUpdateForWriting = (e: any) => {
         console.log("subIndex: ", subIndex);
@@ -201,12 +203,12 @@ const Video = () => {
         const arrNew = subtitle.filter((v, k, a) => {
             if (k !== mergeSub[1]) {
                 if (k === mergeSub[0]) {
-                    const next:Number = mergeSub[1];
+                    const next: Number = mergeSub[1];
                     return {
-                        "startTime": v['startTime'],
-                        "endTime": a[next]['endTime'],
-                        "text": `${v['text']} ${v['text']}`,
-                    }
+                        startTime: v["startTime"],
+                        endTime: a[next]["endTime"],
+                        text: `${v["text"]} ${v["text"]}`,
+                    };
                 } else {
                     return v;
                 }
@@ -234,6 +236,27 @@ const Video = () => {
             }
         }
     };
+    const handlePlay = () => {
+        if (refVideo.current) {
+            if (refVideo.current.paused) {
+                setPlayButton(<PauseCircleOutlined />);
+                refVideo.current.play();
+            } else {
+                setPlayButton(<PlayCircleOutlined />);
+                refVideo.current.pause();
+            }
+        }
+    };
+    const handleBackward = () => {
+        if (refVideo.current) {
+            refVideo.current.currentTime = Math.max(0, refVideo.current.currentTime - 0.2);
+        }
+    };
+    const handleForward = () => {
+        if (refVideo.current) {
+            refVideo.current.currentTime = refVideo.current.currentTime + 0.2;
+        }
+    };
     useEffect(() => {
         // 添加键盘事件监听器
         window.addEventListener("keydown", eventKeyDown);
@@ -249,17 +272,19 @@ const Video = () => {
                 <Scrollbars ref={refScrollbar} style={{ width: "600px", height: "100%" }}>
                     <List
                         header={
-                            <div style={{ color: "#fff", height: "26px", overflow: "hidden", lineHeight: "26px", fontWeight: "bold", fontSize: "16px" }}>
-                                {title}
-                                <Button color="default" variant="solid" onClick={exportSRT}>
-                                    Download
-                                </Button>
-                                <Upload {...props}>
-                                    <Button>Import</Button>
+                            <Space size="small" style={{ margin: "8px" }}>
+                                <Upload beforeUpload={beforeUpload} showUploadList={false}>
+                                    <Button icon={<UploadOutlined />}>Import</Button>
                                 </Upload>
-                            </div>
+                                <Button icon={<FastBackwardOutlined />} onClick={handleBackward}></Button>
+                                <Button icon={playButton} onClick={handlePlay}></Button>
+                                <Button icon={<FastForwardOutlined />} onClick={handleForward}></Button>
+                                <Input value={current} />
+                                <Button icon={<DownloadOutlined />} onClick={exportSRT}>
+                                    Export
+                                </Button>
+                            </Space>
                         }
-                        footer={<TextArea style={{ borderRadius: "0", margin: "10px", resize: "none", backgroundColor: "transparent", color: "hsla(0,0%,100%,.6)" }} value={subtitleInput} onChange={(e) => handleInputSubtitle(e)} rows={2} />}
                         dataSource={subtitle}
                         renderItem={(item, index) => (
                             <List.Item key={`${item.startTime}_${item.endTime}_${item.text}`} ref={(el) => (refLis.current[index] = el)} style={{ alignItems: "flex-start" }} className={index === subIndex ? "current" : ""} onClick={() => onClickItem(index)}>
