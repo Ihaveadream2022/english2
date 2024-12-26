@@ -182,8 +182,6 @@ const Video = () => {
         }
     };
     const handlePlay = () => {
-        console.log("wavesurfer", wavesurfer);
-
         if (refVideo.current) {
             if (refVideo.current.paused) {
                 setPlayButton(<PauseCircleOutlined />);
@@ -243,29 +241,29 @@ const Video = () => {
             progressColor: "rgb(100, 0, 100)",
             url: "/src/assets/Elon.mp3",
             interact: true, // 禁用与波形的交互，点击时不会跳转
+            height: 129,
+            cursorColor: "rgb(87, 87, 89)",
         });
         waver.on("click", () => {
             const currentTime = waver.getCurrentTime();
             waver.seekTo(currentTime / waver.getDuration());
             if (refVideo.current) {
                 refVideo.current.currentTime = currentTime;
+                setCurrent(fnFloatToSRTTime(currentTime));
             }
         });
         setWavesurfer(waver);
     }, []);
     return (
         <>
-            <Layout style={{ minWidth: "1200px", height: "100%" }}>
-                <Content style={{ background: "green", marginLeft: "600px" }}>
-                    <Space size="small" direction="vertical" style={{ width: "100%", height: "100%", alignItems: "stretch", justifyContent: "space-between" }}>
-                        <video style={{ maxWidth: "600px", maxHeight: "400px", textAlign: "center" }} id="video" onPause={handlePause} onEnded={handleEnded} onTimeUpdate={handleTimeUpdate} ref={refVideo}>
-                            <source src="/src/assets/Elon.mp4" type="video/mp4" /> Your browser does not support video tag.
-                        </video>
-                        <div id="wave"></div>
-                    </Space>
+            <Layout style={{ minWidth: "1200px", height: "calc(100% - 178px)", backgroundColor: "#000" }}>
+                <Content style={{ background: "green", marginLeft: "600px", display: "flex", justifyContent: "flex-start", boxSizing:"border-box", backgroundColor: "#ffffff1a" }}>
+                    <video style={{ height: "100%", margin: "0 auto" }} id="video" onPause={handlePause} onEnded={handleEnded} onTimeUpdate={handleTimeUpdate} ref={refVideo}>
+                        <source src="/src/assets/aa.mp4" type="video/mp4" /> Your browser does not support video tag.
+                    </video>
                 </Content>
             </Layout>
-            <aside id="asider" style={{ width: "600px", position: "fixed", left: "0", top: "0", height: "calc(100% - 48px)", border:"1px solid red",backgroundColor: "#202024" }}>
+            <aside id="asider" style={{ width: "600px", position: "fixed", left: "0", top: "0", height: "calc(100% - 178px)", backgroundColor: "#202024" }}>
                 <Scrollbars ref={refScrollbar} style={{ width: "600px", height: "100%" }}>
                     <List
                         dataSource={subtitle}
@@ -281,8 +279,8 @@ const Video = () => {
                     />
                 </Scrollbars>
             </aside>
-            <footer style={{ width:"100%", position: "fixed", bottom: "0", left: "0px",backgroundColor: "#ccc" }}>
-                <Space size="small" style={{ margin: "8px" }}>
+            <footer style={{ width: "100%", position: "fixed", bottom: "0", left: "0px", zIndex: "999", backgroundColor: "#2c2c31" }}>
+                <Space size="small" style={{ width: "100%", padding: "8px" }}>
                     <Upload beforeUpload={beforeUpload} showUploadList={false}>
                         <Button icon={<UploadOutlined />}>Import</Button>
                     </Upload>
@@ -294,6 +292,7 @@ const Video = () => {
                         Export
                     </Button>
                 </Space>
+                <div id="wave" style={{ borderTop: "1px solid #575759" }}></div>
             </footer>
         </>
     );
