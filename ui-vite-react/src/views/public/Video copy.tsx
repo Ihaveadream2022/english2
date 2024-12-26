@@ -11,7 +11,7 @@ interface Subtitle {
 }
 
 const { TextArea } = Input;
-const { Sider, Content, Footer } = Layout;
+const { Sider, Content,Footer } = Layout;
 const Video = () => {
     const [subIndex, setSubIndex] = useState(0);
     const [subtitle, setSubtitle] = useState<Subtitle[]>([{ startTime: "00:00:00,000", endTime: "00:00:01,000", text: "" }]);
@@ -254,23 +254,27 @@ const Video = () => {
         setWavesurfer(waver);
     }, []);
     return (
-        <>
-            <Layout style={{ minWidth: "1200px", height: "100%" }}>
-                <Content style={{ background: "green", marginLeft: "600px" }}>
-                    <Space size="small" direction="vertical" style={{ width: "100%", height: "100%", alignItems: "stretch", justifyContent: "space-between" }}>
-                        <video style={{ maxWidth: "600px", maxHeight: "400px", textAlign: "center" }} id="video" onPause={handlePause} onEnded={handleEnded} onTimeUpdate={handleTimeUpdate} ref={refVideo}>
-                            <source src="/src/assets/Elon.mp4" type="video/mp4" /> Your browser does not support video tag.
-                        </video>
-                        <div id="wave"></div>
-                    </Space>
-                </Content>
-            </Layout>
-            <aside id="asider" style={{ width: "600px", position: "fixed", left: "0", top: "0", height: "calc(100% - 48px)", border:"1px solid red",backgroundColor: "#202024" }}>
+        <Layout style={{ minWidth: "1200px", height: "100%" }}>
+            <Sider width={600} style={{ flex: "0 0 600px", position: "fixed", width: "600px", height: "100%", backgroundColor: "#202024" }}>
                 <Scrollbars ref={refScrollbar} style={{ width: "600px", height: "100%" }}>
                     <List
+                        header={
+                            <Space size="small" style={{ margin: "8px" }}>
+                                <Upload beforeUpload={beforeUpload} showUploadList={false}>
+                                    <Button icon={<UploadOutlined />}>Import</Button>
+                                </Upload>
+                                <Button icon={<FastBackwardOutlined />} onClick={handleBackward}></Button>
+                                <Button icon={playButton} onClick={handlePlay}></Button>
+                                <Button icon={<FastForwardOutlined />} onClick={handleForward}></Button>
+                                <Input value={current} />
+                                <Button icon={<DownloadOutlined />} onClick={exportSRT}>
+                                    Export
+                                </Button>
+                            </Space>
+                        }
                         dataSource={subtitle}
                         renderItem={(item, index) => (
-                            <List.Item key={`${item.startTime}_${item.endTime}_${item.text}`} ref={(el) => (refLis.current[index] = el)} style={{ alignItems: "flex-start" }} onClick={() => onClickItem(index)}>
+                            <List.Item key={`${item.startTime}_${item.endTime}_${item.text}`} ref={(el) => (refLis.current[index] = el)} style={{ alignItems: "flex-start" }} className={index === subIndex ? "current" : ""} onClick={() => onClickItem(index)}>
                                 <Space size="small" style={{ flex: "0 0 94px" }} direction="vertical">
                                     <Input defaultValue={item.startTime} size="small" style={{ borderRadius: "0", backgroundColor: "transparent", color: "hsla(0,0%,100%,.6)" }} onChange={(e) => handleChangeStartTime(e, index)} />
                                     <Input defaultValue={item.endTime} size="small" style={{ borderRadius: "0", backgroundColor: "transparent", color: "hsla(0,0%,100%,.6)" }} onChange={(e) => handleChangeEndTime(e, index)} />
@@ -280,22 +284,18 @@ const Video = () => {
                         )}
                     />
                 </Scrollbars>
-            </aside>
-            <footer style={{ width:"100%", position: "fixed", bottom: "0", left: "0px",backgroundColor: "#ccc" }}>
-                <Space size="small" style={{ margin: "8px" }}>
-                    <Upload beforeUpload={beforeUpload} showUploadList={false}>
-                        <Button icon={<UploadOutlined />}>Import</Button>
-                    </Upload>
-                    <Button icon={<FastBackwardOutlined />} onClick={handleBackward}></Button>
-                    <Button icon={playButton} onClick={handlePlay}></Button>
-                    <Button icon={<FastForwardOutlined />} onClick={handleForward}></Button>
-                    <Input value={current} />
-                    <Button icon={<DownloadOutlined />} onClick={exportSRT}>
-                        Export
-                    </Button>
+            </Sider>
+            <Content style={{ background: "#ccc", marginLeft: "600px" }}>
+                <Space size="small" direction="vertical" style={{ width: "100%", height: "100%", alignItems: "stretch", justifyContent: "space-between" }}>
+                    <video style={{ maxWidth: "600px", maxHeight: "400px", textAlign: "center" }} id="video" onPause={handlePause} onEnded={handleEnded} onTimeUpdate={handleTimeUpdate} ref={refVideo}>
+                        <source src="/src/assets/Elon.mp4" type="video/mp4" /> Your browser does not support video tag.
+                    </video>
+                    <div id="wave"></div>
                 </Space>
-            </footer>
-        </>
+            </Content>
+            <footer>footer</footer>
+        </Layout>
+        
     );
 };
 
