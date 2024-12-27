@@ -20,6 +20,7 @@ const Video = () => {
     const refVideo = useRef<HTMLVideoElement>(null);
     const [mergeSub, setMergeSub] = useState<Number[]>([]);
     const [current, setCurrent] = useState("00:00:00,000");
+    const [videoSRC, setVideoSRC] = useState("");
     const [playButton, setPlayButton] = useState(<PlayCircleOutlined />);
     const [wavesurfer, setWavesurfer] = useState<WaveSurfer | null>(null);
     const beforeUpload = (file: any) => {
@@ -46,6 +47,20 @@ const Video = () => {
                 setSubtitle(subtitleArray);
             }
         };
+        return false;
+    };
+    const beforeUploadVideo = (file: any) => {
+        console.log("file:", file);
+        const videoURL = URL.createObjectURL(file);
+        setVideoSRC(videoURL);
+        refVideo.current?.load()
+        // console.log("videoURL", videoURL);
+        // const reader = new FileReader();
+        // reader.readAsText(file);
+        // reader.onload = (e) => {
+        //     console.log(12312312);
+        //     setVideoSRC(videoURL);
+        // };
         return false;
     };
     const exportSRT = () => {
@@ -257,10 +272,13 @@ const Video = () => {
     return (
         <>
             <Layout style={{ minWidth: "1200px", height: "calc(100% - 178px)", backgroundColor: "#000" }}>
-                <Content style={{ background: "green", marginLeft: "600px", display: "flex", justifyContent: "flex-start", boxSizing:"border-box", backgroundColor: "#ffffff1a" }}>
+                <Content style={{ background: "green", marginLeft: "600px", display: "flex", justifyContent: "flex-start", boxSizing: "border-box", backgroundColor: "#ffffff1a" }}>
                     <video style={{ height: "100%", margin: "0 auto" }} id="video" onPause={handlePause} onEnded={handleEnded} onTimeUpdate={handleTimeUpdate} ref={refVideo}>
-                        <source src="/src/assets/aa.mp4" type="video/mp4" /> Your browser does not support video tag.
+                        <source src={videoSRC} type="video/mp4" /> Your browser does not support video tag.
                     </video>
+                    <Upload beforeUpload={beforeUploadVideo} showUploadList={false}>
+                        <Button icon={<UploadOutlined />}>Import</Button>
+                    </Upload>
                 </Content>
             </Layout>
             <aside id="asider" style={{ width: "600px", position: "fixed", left: "0", top: "0", height: "calc(100% - 178px)", backgroundColor: "#202024" }}>
