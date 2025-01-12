@@ -1,80 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Extract Audio from Video</title>
-</head>
-<body>
-  <h1>Extract Audio from Video</h1>
-  <!-- 文件上传 -->
-  <input type="file" id="fileInput" accept="video/*">
-  
-  <!-- 视频播放 -->
-  <video id="video" controls style="max-width: 100%;"></video>
-  
-  <!-- 提取音频按钮 -->
-  <button id="extractAudio">Extract Audio</button>
-  
-  <!-- 下载音频链接 -->
-  <a id="downloadLink" style="display:none;">Download Audio</a>
-
-  <script>
-    const fileInput = document.getElementById('fileInput');
-    const videoElement = document.getElementById('video');
-    const extractAudioButton = document.getElementById('extractAudio');
-    const downloadLink = document.getElementById('downloadLink');
-
-    // 监听文件选择
-    fileInput.addEventListener('change', function(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const url = URL.createObjectURL(file);
-        videoElement.src = url;
-      }
-    });
-
-    // 提取音频功能
-    extractAudioButton.addEventListener('click', function() {
-      if (!videoElement.src) {
-        alert("Please select a video file first.");
-        return;
-      }
-
-      // 使用 captureStream() 获取视频元素的音频流
-      const stream = videoElement.captureStream();
-      const audioTrack = stream.getAudioTracks()[0];
-
-      // 使用 MediaRecorder API 来录制音频流
-      const mediaRecorder = new MediaRecorder(stream);
-
-      let audioChunks = [];
-
-      mediaRecorder.ondataavailable = function(event) {
-        audioChunks.push(event.data);
-      };
-
-      // 当录制停止时，生成音频文件并提供下载链接
-      mediaRecorder.onstop = function() {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        downloadLink.href = audioUrl;
-        downloadLink.download = 'extracted-audio.webm';
-        downloadLink.style.display = 'inline';
-        downloadLink.textContent = 'Download Audio';
-      };
-
-      // 开始录制
-      mediaRecorder.start();
-
-      // 播放视频的同时录制音频
-      videoElement.play();
-
-      // 当视频播放结束时停止录制
-      videoElement.onended = function() {
-        mediaRecorder.stop();
-      };
-    });
-  </script>
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Extract MP4 Audio</title>
+    </head>
+    <body>
+        <video id="video" controls>
+            <source src="src/assets/rp.mp4" type="video/mp4" />
+        </video>
+        <div id="wave" style=" border: 1px solid red;"></div>
+        <script src="https://unpkg.com/wavesurfer.js@7"></script>
+        <script>
+            const ws = WaveSurfer.create({
+                container: "#wave",
+                waveColor: "rgb(200, 0, 200)",
+                progressColor: "rgb(100, 0, 100)",
+                // Pass the video element in the `media` param
+                media: document.querySelector("video"),
+                backend: 'MediaElement', // 使用 WebAudio 后端
+                scrollParent: true, // 启用滚动加载
+            });
+        </script>
+    </body>
 </html>

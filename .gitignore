@@ -40,3 +40,7 @@ nbdist/
 
 # SQL #
 scripts/english_audio.sql
+
+# Audio #
+*.mp4
+*.mp3

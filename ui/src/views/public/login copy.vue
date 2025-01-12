@@ -1,11 +1,39 @@
 <template>
-    <div>
-        <el-row :gutter="20">
-            <el-col :span="6"><div class="grid-content bg-purple"></div></el-col>
-            <el-col :span="6"><div class="grid-content bg-purple"></div></el-col>
-            <el-col :span="6"><div class="grid-content bg-purple"></div></el-col>
-            <el-col :span="6"><div class="grid-content bg-purple"></div></el-col>
-        </el-row>
+    <div class="container">
+        <div class="left">
+            <div class="logo"></div>
+        </div>
+        <div class="right">
+            <div class="rcont">
+                <div class="top">
+                    <span v-on:click="requestLogout">Welcome</span>
+                    <span class="bar"></span>
+                </div>
+                <div class="bottom">
+                    <el-form ref="loginForm" :model="loginForm" :rules="loginRules">
+                        <div style="margin-bottom: 60px">
+                            <el-form-item prop="username">
+                                <i class="fa fa-user-o"></i>
+                                <el-input maxlength="20" v-model="loginForm.username" placeholder="请输入用户名" />
+                            </el-form-item>
+                            <el-form-item prop="password">
+                                <i class="fa el-icon-lock"></i>
+                                <el-input maxlength="20" v-model="loginForm.password" show-password placeholder="请输入密码"></el-input>
+                            </el-form-item>
+                            <el-form-item prop="code">
+                                <i class="fa el-icon-set-up"></i>
+                                <el-input maxlength="5" v-model="loginForm.code" placeholder="请输入验证码" class="code" />
+                                <img :src="captchSrc" class="code-img" v-on:click="loadCaptch" />
+                            </el-form-item>
+                            <el-form-item class="login-btn">
+                                <el-button type="primary" :loading="submitButtonLoading" v-on:click="requestLogin">Login</el-button>
+                            </el-form-item>
+                        </div>
+                    </el-form>
+                </div>
+            </div>
+        </div>
+        <div class="footer">{{ footer }}</div>
     </div>
 </template>
 
