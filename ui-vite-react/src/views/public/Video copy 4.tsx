@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Layout, List, Input, Space, Button, Upload, Checkbox, Divider, Col, Row } from "antd";
+import { Layout, List, Input, Space, Button, Upload, Checkbox, Divider } from "antd";
 import "./Video.scss";
 import WaveSurfer from "wavesurfer.js";
 import { Scrollbars } from "react-custom-scrollbars-2";
@@ -342,25 +342,10 @@ const Video = () => {
                         dataSource={subtitle}
                         renderItem={(item, index) => (
                             <List.Item key={`${item.startTime}_${item.endTime}_${item.text}`} ref={(el) => (refLis.current[index] = el)} style={{ alignItems: "normal" }} onClick={() => onFocusSub(index)} className={index === subIndex ? "current" : ""}>
-                                <Space size="small" style={{ flex: "0 0 94px", justifyContent: "space-between", rowGap: 0 }} direction="vertical">
+                                <Space size="small" style={{ flex: "0 0 94px", justifyContent: "space-between" }} direction="vertical">
                                     <Input defaultValue={item.startTime} size="small" style={{ borderRadius: "0", backgroundColor: "transparent", color: "hsla(0,0%,100%,.6)" }} onBlur={(e) => handleBlurStartTime(e, index)} />
                                     <Input defaultValue={item.endTime} size="small" style={{ borderRadius: "0", backgroundColor: "transparent", color: "hsla(0,0%,100%,.6)" }} onBlur={(e) => handleBlurEndTime(e, index)} />
                                 </Space>
-                                <Row gutter={[32, 16]}>
-                                    <Col span={4} />
-                                    <Col span={4} />
-                                    <Col span={4} />
-                                    <Col span={4} />
-                                    <Col span={4} />
-                                    <Col span={4} />
-                                    
-                                    <Col span={4} />
-                                    <Col span={4} />
-                                    <Col span={4} />
-                                    <Col span={4} />
-                                    <Col span={4} />
-                                    <Col span={4} />
-                                </Row>
                                 <TextArea defaultValue={item.text} style={{ flex: 1, minHeight: "55px", marginLeft: "8px", borderRadius: "0", backgroundColor: "transparent", color: "hsla(0,0%,100%,.6)" }} onBlur={(e) => handleBlurText(e, index)} autoSize />
                             </List.Item>
                         )}

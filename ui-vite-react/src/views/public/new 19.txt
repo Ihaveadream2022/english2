@@ -1,0 +1,67 @@
+
+
+
+对话型：
+[
+	{
+		"type": "section",
+		"startTime": "00:00:55,442",
+		"endTime": "00:00:58,210",
+		"text": "I would say good morning, but it's afternoon.",
+		"html": "<section><p><span data-1>?</span></p>"
+	},
+	{
+		"startTime": "00:01:00,482",
+		"endTime": "00:01:05,499",
+		"text": "I'm grateful to Vanessa and the Bryant family for the opportunity to speak today.",
+		"html": "<p><span data-2>?</span></p>"
+	},
+	{
+		"startTime": "00:01:00,482",
+		"endTime": "00:01:05,499",
+		"text": "I'm grateful to Vanessa and the Bryant family for the opportunity to speak today.",
+		"html": "<p><span data-3>?</span></p></section>"
+	}
+]
+<section>
+	<p>
+		<span data-1>Hello. What are you doing?</span>
+	</p>
+	<p>
+		<span data-2>Hello. What are you doing?</span>
+	</p>
+	<p>
+		<span data-3>Hello. I'm swimming.</span>
+	</p>
+</section>
+
+
+讲述型：
+[
+	{
+		"type": "section",
+		"startTime": "00:00:55,442",
+		"endTime": "00:00:58,210",
+		"text": "I would say good morning, but it's afternoon.",
+		"html": "<section><p><span data-1>?</span>"
+	},
+	{
+		"startTime": "00:01:00,482",
+		"endTime": "00:01:05,499",
+		"text": "I'm grateful to Vanessa and the Bryant family for the opportunity to speak today.",
+		"html": "<span data-2>?</span>"
+	},
+	{
+		"startTime": "00:01:00,482",
+		"endTime": "00:01:05,499",
+		"text": "I'm grateful to Vanessa and the Bryant family for the opportunity to speak today.",
+		"html": "<span data-3>?</span></p></section>"
+	}
+]
+<section>
+	<p>
+		<span data-1>I would say good morning, but it's afternoon.</span>
+		<span data-2>I'm grateful to Vanessa and the Bryant family for the opportunity to speak today.</span>
+		<span data-3>I'm grateful to Vanessa and the Bryant family for the opportunity to speak today.</span>
+	</p>
+</section>
